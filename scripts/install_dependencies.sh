@@ -5,6 +5,9 @@ source "../libs/pathing.sh"
 source "../libs/quick_log.sh"
 source "../libs/color_output.sh"
 
+# Executa configuração de váriaveis de ambiente o systemd.
+sudo "$CONFIG_DIR/systemd_config"
+
 install (){
 	if ! command -v "$1" > /dev/null 2>&1; then
 		echo "$1 será instalado..."

@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+source "../libs/color_output.sh"
+
+SERVICE="demucs_pipeline"
+PROD_HOSTNAME="Ubuntu-2404-noble-amd64-base"
+
+if [ $(hostname) == "$PROD_HOSTNAME" ]; then
+    echo -e "Aplicando config de ${BoldIntenseGreen}produção${ResetColor}..."
+    WORKDIR="/root/Audio_Separation_Pipeline"
+    EXECSTART="/root/Audio_Separation_Pipeline/scripts/start_pipeline.sh"
+else
+    echo -e "Aplicando config ${BoldIntenseGreen}local${ResetColor}..."
+    WORKDIR="/home/lqs/Desktop/Audio_Separation_Pipeline"
+    EXECSTART="/home/lqs/Desktop/Audio_Separation_Pipeline/scripts/start_pipeline.sh"
+fi
+
+mkdir -p /etc/systemd/system/${SERVICE}.service.d/
+
+cat > /etc/systemd/system/${SERVICE}.service.d/override.conf <<EOF
+[Service]
+WorkingDirectory=${WORKDIR}
+ExecStart=
+ExecStart=${EXECSTART}
+EOF
+
+sudo systemctl daemon-reload
+sudo systemctl restart "$SERVICE"

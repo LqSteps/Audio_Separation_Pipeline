@@ -8,7 +8,7 @@ MEDIA_DIR="$BASE_DIR/Media"
 INPUT_DIR="$MEDIA_DIR/Filmes_Entrada"
 OUTPUT_DIR="$MEDIA_DIR/Filmes_Saida"
 SERVICE_DIR="$BASE_DIR/services"
-CONFIG_DIR="$BASE_DIR/congig"
+CONFIG_DIR="$BASE_DIR/config"
 
 help=$(echo -e "\$BASE_DIR = Diretório Raiz.\ 
 	\n\$SCRIPT_DIR = Diretório de Scripts. \ 
