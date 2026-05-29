@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+source "../libs/color_output.sh"
+
+# Usa build customizada do ffmpeg com codecs cuda no servidor com gpu,
+# no ambiente local de desenvolvimento usa h264 padrão.
+if [ $(hostname) == "Ubuntu-2404-noble-amd64-base" ]; then
+	echo -e "Pipeline rodando em produção, utilizando codec:${BoldIntenseGreen} h264_nvenc...${ResetColor}"
+	FFMPEG_CODEC=h264_nvenc
+else
+	echo -e "Pipeline rodando localmente, utilizando codec: ${BoldIntenseGreen}libx264...${ResetColor}"
+	FFMPEG_CODEC=libx264
+fi
