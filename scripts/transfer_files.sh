@@ -7,5 +7,5 @@ source "../libs/pathing.sh"
 source "../config/network_config"
 
 # Transferência de arquivos que não constam no destino (servidor 1)
-rsync -rv "../Media/Filmes_Saida" "$SSH_AGENT:/mnt/16tb/Audio_Separation_Pipeline/Media"
+rsync -rv --checksum "../Media/Filmes_Saida" "$SSH_AGENT:/mnt/16tb/Audio_Separation_Pipeline/Media"
 
