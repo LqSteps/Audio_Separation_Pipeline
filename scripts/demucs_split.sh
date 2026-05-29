@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+# Path do Demucs na venv
+
+readonly ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+readonly VENV_DIR="$ROOT_DIR/.venv"
+readonly DEMUCS="$VENV_DIR/bin/demucs"
+
 # Consultar documentação da seção "libs".
 source "../libs/pathing.sh"
 source "../libs/quick_log.sh"
@@ -15,6 +21,7 @@ processar: (){
 		-type f \
 		-iname "*$2.wav" \
 		-not -path "*/Stems/*" \
+		-not -path "*/Falhas_Demucs/*" \
 		-print0
 	)
 	
@@ -31,7 +38,7 @@ processar: (){
 			echo -e "${IntenseCyan}Processando $i...${ResetColor}"
 
 			# Checa se o processamento foi executado corretamente.	
-			if PYTHONWARNINGS="ignore" demucs -n htdemucs \
+			if PYTHONWARNINGS="ignore" "$DEMUCS" -n htdemucs \
 			--shifts 1 --segment 7 -j3 -o \
 			"$(dirname "${i}")/Stems" "$i"; then
 				
