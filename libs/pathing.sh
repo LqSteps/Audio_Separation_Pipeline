@@ -7,6 +7,7 @@ LOG_DIR="$BASE_DIR/logs"
 MEDIA_DIR="$BASE_DIR/Media"
 INPUT_DIR="$MEDIA_DIR/Filmes_Entrada"
 OUTPUT_DIR="$MEDIA_DIR/Filmes_Saida"
+SERVICE_DIR="$BASE_DIR/services"
 
 help=$(echo -e "\$BASE_DIR = Diretório Raiz. \ 
 	\n\$SCRIPT_DIR = Diretório de Scripts. \ 
