@@ -4,11 +4,10 @@ After=network.target
 
 [Service]
 Type=simple
-User=lqs
-Group=lqs
+User=root
 
-WorkingDirectory=/home/lqs/Desktop/Audio_Separation_Pipeline
-ExecStart=/home/lqs/Desktop/Audio_Separation_Pipeline/scripts/start_pipeline.sh
+WorkingDirectory=/root/Audio_Separation_Pipeline
+ExecStart=/root/Audio_Separation_Pipeline/scripts/start_pipeline.sh
 
 Restart=always
 StartLimitBurst=2

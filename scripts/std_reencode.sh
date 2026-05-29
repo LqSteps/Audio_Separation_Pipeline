@@ -16,7 +16,7 @@ mapfile -d "" files < <(
 main (){
 		
 	for i in "${files[@]}"; do
-		if ffmpeg -i "$i" -c:v libx264 \
+		if ffmpeg -i "$i" -c:v h264_nvenc \
 			-s 720x480 \
 			-c:a copy "${i%.*}_480p.mp4" \
 			-hide_banner; then
