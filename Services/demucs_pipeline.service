@@ -1,0 +1,17 @@
+[Unit]
+Description=Executa pipeline completo da separação de voz das dublagens.
+After=network.target
+
+[Service]
+Type=simple
+User=root
+
+WorkingDirectory=/home/lqs/Desktop/Audio_Separation_Pipeline
+ExecStart=/home/lqs/Desktop/Audio_Separation_Pipeline/scripts/start_pipeline.sh
+
+Restart=always
+StartLimitBurst=2
+StartLimitInterval=10
+
+[Install]
+WantedBy=multi-user.target
