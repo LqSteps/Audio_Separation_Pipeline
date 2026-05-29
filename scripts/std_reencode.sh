@@ -1,8 +1,11 @@
 #!/usr/bin/env bash
 
-# Consultar documentação da seção "libs".
+# Consultar documentação na seção "libs".
 source "../libs/pathing.sh"
 source "../libs/quick_log.sh"
+
+# Consultar documentação na seção "config".
+source "../config/ffmpeg_config"
 
 # Array que contém arquivos de vídeo, com exceção dos que já foram reencodados e comprimidos para 480p.
 mapfile -d "" files < <(
@@ -16,7 +19,7 @@ mapfile -d "" files < <(
 main (){
 		
 	for i in "${files[@]}"; do
-		if ffmpeg -i "$i" -c:v h264_nvenc \
+		if ffmpeg -i "$i" -c:v "$FFMPEG_CODEC" \
 			-s 720x480 \
 			-c:a copy "${i%.*}_480p.mp4" \
 			-hide_banner; then

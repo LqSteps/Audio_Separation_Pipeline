@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+source "../libs/color_output.sh"
+
+# Usa agente SSH de cada ambiente para enviar arquivos ao servidor 1.
+# no ambiente local de desenvolvimento usa h264 padrão.
+if [ $(hostname) == "Ubuntu-2404-noble-amd64-base" ]; then
+	SSH_AGENT=root@157.180.2.67
+else
+	SSH_AGENT=servidor_1
+fi
+
