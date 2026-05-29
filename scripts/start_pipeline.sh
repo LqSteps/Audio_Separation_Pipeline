@@ -16,4 +16,6 @@ source "../libs/pathing.sh"
 
 "$SCRIPT_DIR/demucs_split.sh"
 
+"$SCRIPT_DIR/transfer_files.sh"
+
 sleep 120
