@@ -4,10 +4,10 @@ Este projeto visa automatizar integralmente uma rotina de extração de diálogo
 A documentação completa se encontra em docs/. Este **README.md** comporta o *overview* do projeto. Informação especializada sobre os *scripts*, bibliotecas, arquivos de configuração e serviço são seções a parte.
 
 ## Requisitos de Sistema
-> Sistema Operacional: MacOS ou Linux\
+> Sistema Operacional: MacOS ou Linux
 ### Requisitos Mínimos de Sistema 
 > 16GB de RAM\
-> CPU Ryzen 5 5600 / Core i5-12400 \
+> CPU Ryzen 5 5600 / Core i5-12400
 
 *Para execução em hardware comercial, recomenda-se arquivos de duração menor ou que o usuário divida o arquivo em lotes.*
 
@@ -15,7 +15,7 @@ A documentação completa se encontra em docs/. Este **README.md** comporta o *o
 ### Requisitos Recomendados de Sistema 
 > 64GB DE RAM\
 > CPU i5-13500 14 Core "Raptor Lake-S"\
-> GPU RTX 4000 Ada Genaration ou similares\
+> GPU RTX 4000 Ada Genaration ou similares
 
 *Configurações testadas no ambiente de desenvolvimento, resultado satisfatório. A run completa de um arquivo leva de 1 à 2h em qualidades inferiores e 3 a 6 horas em maior qualidade, considerando média de 2h de duração das faixas de áudio.*
 
