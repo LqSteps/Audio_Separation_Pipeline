@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 
+readonly ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
 # Consultar documentação da seção "libs".
-source "../libs/pathing.sh"
-source "../libs/quick_log.sh"
+source "$ROOT_DIR/libs/pathing.sh"
+source "$ROOT_DIR/libs/quick_log.sh"
 
 channel3_dir="$OUTPUT_DIR/3_channels"
 channel6_dir="$OUTPUT_DIR/6_channels"

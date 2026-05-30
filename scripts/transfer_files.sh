@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
 
+readonly ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
 # Consultar documentação na seção de libs.
-source "../libs/pathing.sh"
+source "$ROOT_DIR/libs/pathing.sh"
 
 # Consultar documentação na seção de configs.
-source "../config/network_config"
+source "$ROOT_DIR/config/network_config"
 
 # Transferência de arquivos que não constam no destino (servidor 1)
-rsync -rv --checksum "../Media/Filmes_Saida" "$SSH_AGENT:/mnt/16tb/Audio_Separation_Pipeline/Media"
+rsync -rv --checksum "$OUTPUT_DIR" -e "ssh -p 31754" "$SSH_AGENT:/mnt/16tb/Audio_Separation_Pipeline/Media"
 

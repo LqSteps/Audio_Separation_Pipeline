@@ -1,17 +1,18 @@
 #!/usr/bin/env bash
+readonly ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 # Consultar documentação da seção "libs".
-source "../libs/pathing.sh"
-source "../libs/quick_log.sh"
-source "../libs/color_output.sh"
+source "$ROOT_DIR/libs/pathing.sh"
+source "$ROOT_DIR/libs/quick_log.sh"
+source "$ROOT_DIR/libs/color_output.sh"
 
 # Executa configuração de váriaveis de ambiente o systemd.
-sudo "$CONFIG_DIR/systemd_config"
+sudo "$ROOT_DIR/config/systemd_config"
 
 install (){
 	if ! command -v "$1" > /dev/null 2>&1; then
 		echo "$1 será instalado..."
-		apt install "$1" ý
+		apt install "$1" -y
 
 	else
 		echo -e "${BoldBlue}$1 já existe no sistema.${BoldBlue}"

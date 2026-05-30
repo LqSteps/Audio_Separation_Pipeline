@@ -10,3 +10,4 @@ logs/
 *.corrupted
 Stems/
 Falhas_Demucs/
+.venv/

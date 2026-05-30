@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-source "../libs/color_output.sh"
+
+readonly ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+source "$ROOT_DIR/libs/color_output.sh"
 
 SERVICE="demucs_pipeline"
 PROD_HOSTNAME="Ubuntu-2404-noble-amd64-base"

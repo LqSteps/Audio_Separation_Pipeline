@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
 
+readonly ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
 # Evita fazer o parsing literal de "*.mp4" caso não haja arquivos mp4 no diretório.
 shopt -s nullglob
 
 # Consultar documentação da seção "libs".
-source "../libs/pathing.sh"
-source "../libs/quick_log.sh"
-source "../libs/color_output.sh"
+source "$ROOT_DIR/libs/pathing.sh"
+source "$ROOT_DIR/libs/quick_log.sh"
+source "$ROOT_DIR/libs/color_output.sh"
 
 # Função responsável por contar múmero de arquivos identificados por canal.
 count_files () {

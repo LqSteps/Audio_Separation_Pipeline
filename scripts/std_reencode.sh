@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
 
+readonly ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
 # Consultar documentação na seção "libs".
-source "../libs/pathing.sh"
-source "../libs/quick_log.sh"
+source "$ROOT_DIR/libs/pathing.sh"
+source "$ROOT_DIR/libs/quick_log.sh"
 
 # Consultar documentação na seção "config".
-source "../config/ffmpeg_config"
+source "$ROOT_DIR/config/ffmpeg_config"
 
 # Array que contém arquivos de vídeo, com exceção dos que já foram reencodados e comprimidos para 480p.
 mapfile -d "" files < <(

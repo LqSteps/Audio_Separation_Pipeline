@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 
+readonly ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 # Consultar documentação da seção "libs".
-source "../libs/pathing.sh"
-source "../libs/quick_log.sh"
+source "$ROOT_DIR/libs/pathing.sh"
+source "$ROOT_DIR/libs/quick_log.sh"
 
 
 # Função responsável pelo processamento da versão em .wav pcm. O argumento 1 faz a função trabalhar apenas com o layout de áudio indicado, 

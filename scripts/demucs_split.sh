@@ -7,9 +7,9 @@ readonly VENV_DIR="$ROOT_DIR/.venv"
 readonly DEMUCS="$VENV_DIR/bin/demucs"
 
 # Consultar documentação da seção "libs".
-source "../libs/pathing.sh"
-source "../libs/quick_log.sh"
-source "../libs/color_output.sh"
+source "$ROOT_DIR/libs/pathing.sh"
+source "$ROOT_DIR/libs/quick_log.sh"
+source "$ROOT_DIR/libs/color_output.sh"
 
 # Função que acha arquivos .wav que não foram processados e roda o demucs. 
 # O argumento 1 indica qual layout de canais o script  busca, o 2 indica qual faixa será processada, referente a layouts de 6 canais ou mais.
