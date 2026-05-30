@@ -4,7 +4,7 @@ Este projeto visa automatizar integralmente uma rotina de extração de diálogo
 A documentação completa se encontra em docs/. Este **README.md** comporta o *overview* do projeto. Informação especializada sobre os *scripts*, bibliotecas, arquivos de configuração e serviço são seções a parte.
 
 ## Requisitos de Sistema
-> Sistema Operacional: MacOS ou Linux
+> Sistema Operacional: Linux
 ### Requisitos Mínimos de Sistema 
 > 16GB de RAM\
 > CPU Ryzen 5 5600 / Core i5-12400
