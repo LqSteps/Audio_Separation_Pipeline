@@ -47,7 +47,7 @@ chmod +x scripts/venv.sh
 #GPU disponível, execute:
 ./venv gpu
 
-#Passo crucial, dependendo da escolha, pacotes diferentes serão instalados para dar suporte à cada uma.
+# Passo crucial, dependendo da escolha, pacotes diferentes serão instalados para dar suporte à cada uma.
 # Se sistemas sem GPU instalarem pacotes de GPU, o módulo de separação de voz não funcionará.
 # Para sistemas com GPU, o usuário pode escolher instalar apenas dependências de CPU e utilizar o pipeline com processamento mais lento, embora o projeto conte com fallback integral para CPU se a placa de vídeo falhar ou não for detecada.
 ``` 
