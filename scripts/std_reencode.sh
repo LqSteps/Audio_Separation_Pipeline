@@ -5,7 +5,8 @@ readonly ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 # Consultar documentação na seção "libs".
 source "$ROOT_DIR/libs/pathing.sh"
 source "$ROOT_DIR/libs/quick_log.sh"
-
+source "$ROOT_DIR/libs/queue_tracker.sh"
+source "$ROOT_DIR/libs/color_output.sh"
 # Consultar documentação na seção "config".
 source "$ROOT_DIR/config/ffmpeg_config"
 
@@ -17,10 +18,16 @@ mapfile -d "" files < <(
 	-print0
 )
 
+queue="$BASE_DIR/tmp/file_queue.txt"
+touch "$queue"
+: > "$queue"
+echo "Fila:" >> "$queue"
+
 # Função principal responsável por padronizar arquivos de entrada em h264 e 480p.
 main (){
 		
 	for i in "${files[@]}"; do
+
 		if ffmpeg -i "$i" -c:v "$FFMPEG_CODEC" \
 			-s 720x480 \
 			-c:a copy "${i%.*}_480p.mp4" \
@@ -29,11 +36,17 @@ main (){
 			# Processamento Ok - Registro no log com status OK.
 			log_ok "$i" "${i%.*}_480p.mp4" "std_reencode.log"
 			
+			
+    			echo "${i%.*}_480p.mp4" >> "$queue"
+			
+
 			rm "$i"
 		else 
 			echo "Corrompido, pulando..."
 			# Processamento ERRO - Registro no log com status ERRO.
 			log_erro "$i" "$i.corrupted" "std_reencode.log"
+			remove_from_queue "$i"
+
 
 			# Adiciona extensão ".corrupted" 
 			# para arquivos corrompidos que não foram processados.

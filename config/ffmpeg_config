@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
-
-readonly ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-source "$ROOT_DIR/color_output.sh"
+#
+source "$ROOT_DIR/libs/color_output.sh"
 
 # Usa build customizada do ffmpeg com codecs cuda no servidor com gpu,
 # no ambiente local de desenvolvimento usa h264 padrão.

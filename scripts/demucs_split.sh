@@ -10,6 +10,7 @@ readonly DEMUCS="$VENV_DIR/bin/demucs"
 source "$ROOT_DIR/libs/pathing.sh"
 source "$ROOT_DIR/libs/quick_log.sh"
 source "$ROOT_DIR/libs/color_output.sh"
+source "$ROOT_DIR/libs/queue_tracker.sh"
 
 # Função que acha arquivos .wav que não foram processados e roda o demucs. 
 # O argumento 1 indica qual layout de canais o script  busca, o 2 indica qual faixa será processada, referente a layouts de 6 canais ou mais.
@@ -27,20 +28,26 @@ processar: (){
 	
 	# Processamento do Demucs.
 	for i in "${files[@]}"; do
-		
+
+		remove_from_queue "${i%.*}.mp4"
+
 		# Checa se pasta de saída já existe, se sim, pula, se não, processa.
 		if [ -d "$(dirname "${i}")/Stems/htdemucs/$(basename "${i%.*}")" ]; then
 
 			echo -e "${BoldIntenseYellow}$i já processado${ResetColor}"
 
 		else
-
-			echo -e "${IntenseCyan}Processando $i...${ResetColor}"
+			mkdir -p "$BASE_DIR/tmp"
+			touch "$BASE_DIR/tmp/current_file_demucs.txt"
+			touch "$BASE_DIR/tmp/current_progress_demucs.txt"
+			current_file_log="$BASE_DIR/tmp/current_file_demucs.txt"
+			current_progress="$BASE_DIR/tmp/current_progress_demucs.txt"
+			echo -e "${BoldIntenseCyan}Processando $i...${ResetColor}" >"$current_file_log"
 
 			# Checa se o processamento foi executado corretamente.	
 			if PYTHONWARNINGS="ignore" "$DEMUCS" -n htdemucs \
-			--shifts 1 --segment 7 -j3 -o \
-			"$(dirname "${i}")/Stems" "$i"; then
+			--shifts 1 --segment 7 -o \
+			"$(dirname "${i}")/Stems" "$i" 2>"$current_progress"; then
 				
 				echo -e "${IntenseGreen}$i processado com sucesso${ResetColor}"
 				# Resultado OK > Entrada com Status OK no log.
@@ -62,6 +69,6 @@ processar: (){
 }
 
 # Execução da função com argumentos como descrito no comentário acima da função "processar". 
-#processar: mono
+processar: mono
 processar: stereo
 #processar: 6_channels FC

@@ -5,6 +5,7 @@ readonly ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 # Consultar documentação da seção "libs".
 source "$ROOT_DIR/libs/pathing.sh"
 source "$ROOT_DIR/libs/quick_log.sh"
+source "$ROOT_DIR/libs/queue_tracker.sh"
 
 channel3_dir="$OUTPUT_DIR/3_channels"
 channel6_dir="$OUTPUT_DIR/6_channels"
@@ -55,7 +56,7 @@ processar_channel3 (){
 			else
 				# Processamento ERRO - Registro no log com status ERRO.
 				log_erro "$i" "$split_path" "extrair_3canais.log" 
-
+				remove_from_queue "$i"
 				# Adiciona extensão .corrupted ao arquivo, para inspeção posterior e evitar reprocessamento.
 				mv "$i" "$i.corrupted"
 			fi

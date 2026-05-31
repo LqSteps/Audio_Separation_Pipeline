@@ -9,6 +9,7 @@ shopt -s nullglob
 source "$ROOT_DIR/libs/pathing.sh"
 source "$ROOT_DIR/libs/quick_log.sh"
 source "$ROOT_DIR/libs/color_output.sh"
+source "$ROOT_DIR/libs/queue_tracker.sh"
 
 # Função responsável por contar múmero de arquivos identificados por canal.
 count_files () {
@@ -52,8 +53,12 @@ main (){
 		format_2=$(echo "$format" | tr " " "_")
 
 		# Lógica que impede arquivos sem áudio de serem processados e criarem pastas vazias ou serem movidos no mesmo lugar.
-		[ -z "$format_2" ] && echo -e "${IntenseYellow}$i não contém stream(s) de áudio!${ResetColor}\n" && continue
-	
+		if [ -z "$format_2" ]; then
+    			echo -e "${IntenseYellow}$i não contém stream(s) de áudio!${ResetColor}\n"
+    			remove_from_queue "$i"
+    			continue
+		fi
+
 		# Relatório ao usuário que explicita o tipo de layout de cada arquivo.
 		echo -e "${Blue}$i${ResetColor} = ${Green}$format_2${ResetColor}"
 

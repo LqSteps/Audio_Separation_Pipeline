@@ -4,7 +4,7 @@ readonly ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 # Consultar documentação da seção "libs".
 source "$ROOT_DIR/libs/pathing.sh"
 source "$ROOT_DIR/libs/quick_log.sh"
-
+source "$ROOT_DIR/libs/queue_tracker.sh"
 
 # Função responsável pelo processamento da versão em .wav pcm. O argumento 1 faz a função trabalhar apenas com o layout de áudio indicado, 
 # este script foi pensado para aceitar mono, stereo e 3.0.
@@ -43,6 +43,7 @@ processar (){
 			mv "$i" "${i%.*}.corrupted"
 			echo "Corrompido, pulando ..."
 			log_erro "$i" "${i%.*}.corrupted" "$1_wav.log"
+			remove_from_queue "$i"
 		fi
 
 	done
