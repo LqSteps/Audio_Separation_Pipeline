@@ -58,6 +58,8 @@ chmod +x scripts/venv.sh
 
 7. Caso o sistema não esteja rodando, edite o arquivo de serviço e certifique-se de que o "**WorkingDir**" aponta para o caminho completo do diretório do repositório e "**Exec_Start**" aponte para o caminho absoluto de [start_pipeline.sh](scripts/start_pipeline.sh).
 
+8. Acompanhe o progresso do demucs e a fila de processamento executando os seguintes scripts com sudo: [run_info/progress.sh](run_info/progress.sh) / [run_info/queue.sh](run_info/queue.sh)
+
 >* O serviço pode ser desativado com ```systemctl stop demucs_pipeline```e executado manualmente a partir do [start_pipeline.sh](scripts/start_pipeline.sh).
 ## Estrutura
 [start_pipeline.sh](scripts/start_pipeline.sh) executa os módulos na ordem apresentada. Porém, como dito anteriormente, uma das vantagens deste projeto é modularização completa, cada módulo pode ser executado fora do fluxo padrão e este script também pode ser alterado para atender à demandas diferentes..
