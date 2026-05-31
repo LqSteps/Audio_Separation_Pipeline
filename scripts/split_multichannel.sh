@@ -36,7 +36,7 @@ mapfile -d "" files5_1_side < <(
 )
 
 mapfile -d "" files5_1 < <(
-        find "$channel5_1" -type f \
+        find "$channel_5_1" -type f \
         -iname "*.mp4" \
         -print0 2>/dev/null
 )
