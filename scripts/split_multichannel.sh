@@ -9,11 +9,14 @@ source "$ROOT_DIR/libs/queue_tracker.sh"
 
 channel3_dir="$OUTPUT_DIR/3_channels"
 channel6_dir="$OUTPUT_DIR/6_channels"
-
+channel_5_1_side="$OUTPUT_DIR/5.1(side)"
+channel_5_1="$OUTPUT_DIR/5.1"
 
 # Arrays qye contém todos arquivos ".mp4" na pasta de entrada, 
 # esses vídeos são o output reencodado do script "std_reencode.sh".
 
+
+#Fix temporário de vários arrays até eu ter tempo de transformar tudo isso em uma função só.
 mapfile -d "" files3 < <(
 	find "$channel3_dir" -type f \
 	-iname "*.mp4" \
@@ -22,6 +25,18 @@ mapfile -d "" files3 < <(
 
 mapfile -d "" files6 < <(
         find "$channel6_dir" -type f \
+        -iname "*.mp4" \
+        -print0 2>/dev/null
+)
+
+mapfile -d "" files5_1_side < <(
+        find "$channel_5_1_side" -type f \
+        -iname "*.mp4" \
+        -print0 2>/dev/null
+)
+
+mapfile -d "" files5_1 < <(
+        find "$channel5_1" -type f \
         -iname "*.mp4" \
         -print0 2>/dev/null
 )
@@ -67,9 +82,11 @@ processar_channel3 (){
 }
 
 # Mesma lógica da função processar_channel3, porém com o payload do ffmpeg voltado para o mapeamento de layouts de audio 5.1.
-processar_channel6 (){
+processar_5_1_layouts (){
 
-	for i in "${files6[@]}"; do
+	local -n arr="$1"
+
+	for i in "${arr[@]}"; do
                 local dir="$(dirname "$i")"
                 local base="$(basename "${i%.*}")"
                 local split_path="$dir/Canais_Separados/$base"
@@ -101,4 +118,7 @@ processar_channel6 (){
 
 processar_channel3
 
-processar_channel6
+# Concentrar tudo em uma call na próxima atualização
+processar_5_1_layouts files6
+processar_5_1_layouts files5_1_side
+processar_5_1_layouts files_5_1
