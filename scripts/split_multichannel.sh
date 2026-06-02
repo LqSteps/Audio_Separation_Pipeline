@@ -16,36 +16,22 @@ channel_5_1="$OUTPUT_DIR/5.1"
 # esses vídeos são o output reencodado do script "std_reencode.sh".
 
 #Fix temporário de vários arrays até eu ter tempo de transformar tudo isso em uma função só.
-mapfile -d "" files3 < <(
-        find "$channel3_dir" -type f \
-        -iname "*.mp4" \
-        -print0 2>/dev/null
-)
+files (){
+	local -n arr="$1"
+	local -n dir="$2"
 
-mapfile -d "" files6 < <(
-        find "$channel6_dir" -type f \
-        -iname "*.mp4" \
-        -print0 2>/dev/null
-)
-
-mapfile -d "" files5_1_side < <(
-        find "$channel_5_1_side" -type f \
-        -iname "*.mp4" \
-        -print0 2>/dev/null
-)
-
-mapfile -d "" files5_1 < <(
-        find "$channel_5_1" -type f \
-        -iname "*.mp4" \
-        -print0 2>/dev/null
-)
-
-
+	mapfile -d "" arr < <(
+		find "$dir" -type f \
+		-iname "*.mp4" \
+		-print0 2>/dev/null
+	)
+}
 # Função responsável por mapear os canais do arquivo, independentemente do layout,
 # assim permite que formatos não especificados resultem em erro.
 processar_channel3 (){
-
-        for i in "${files3[@]}"; do
+	
+	local -n arr="$1"
+        for i in "${arr[@]}"; do
                 local dir="$(dirname "$i")"
                 local base="$(basename "${i%.*}")"
                 local split_path="$dir/Canais_Separados/$base"
@@ -116,9 +102,28 @@ processar_5_1_layouts (){
         done
 }
 
-processar_channel3
+# CALLS DAS FUNÇÔES POR LAYOUT 
 
-# Concentrar tudo em uma call na próxima atualização
+# 3.0
+echo "Buscando arquivos com layout 3.0..."
+files files3 channel3_dir
+
+processar_channel3 files3
+
+# 6.0
+echo "Buscando arquivos com layout 6.0..."
+files files6 channel6_dir
+
 processar_5_1_layouts files6
+
+# 5.1(side)
+echo "Buscando arquivos com layout 5.1(side)..."
+files files5_1_side channel_5_1_side
+
 processar_5_1_layouts files5_1_side
+
+echo "Buscando arquivos com layout 5.1..."
+# 5.1
+files files5_1 channel_5_1
+
 processar_5_1_layouts files5_1
