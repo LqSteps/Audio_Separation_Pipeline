@@ -14,6 +14,6 @@ if [ $(hostname) == "Ubuntu-2404-noble-amd64-base" ]; then
 else
         echo -e "Pipeline rodando localmente, utilizando codec: ${BoldIntenseGreen}ht_demucs...${ResetColor}"
         MODEL="ht_demucs"
-	SEGMENT=-"-segment 7"
+	SEGMENT=-"--segment 7"
 	SHIFTS="--shifts 1"
 fi	

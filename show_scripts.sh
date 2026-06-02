@@ -2,7 +2,8 @@
 
 mapfile -d "" files < <(
 	find -type f \
-	-iname "*.sh" \
+		\( -iname "*.sh" -o -path "*/config/*" \) \
+		-not -path "*/.venv/*" \
 	-print0
 )
 
