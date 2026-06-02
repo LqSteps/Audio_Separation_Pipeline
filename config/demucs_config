@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+#
+source "$ROOT_DIR/libs/color_output.sh"
+
+# Usa modelo e configurações diferentes do demucs em cada ambiente.
+# GPU: mdx_extra, -segment 250, shifts 4
+# CPU Dev: ht_demucs, -segment 7, shifts 1
+#
+if [ $(hostname) == "Ubuntu-2404-noble-amd64-base" ]; then
+        echo -e "Pipeline rodando em produção, utilizando modelo:${BoldIntenseGreen} mdx_extra...${ResetColor}"
+        MODEL="mdx_extra"
+	SEGMENT="--segment 250"
+	SHIFTS="--shifts 4"
+else
+        echo -e "Pipeline rodando localmente, utilizando codec: ${BoldIntenseGreen}ht_demucs...${ResetColor}"
+        MODEL="ht_demucs"
+	SEGMENT=-"-segment 7"
+	SHIFTS="--shifts 1"
+fi	

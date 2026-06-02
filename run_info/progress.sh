@@ -13,6 +13,6 @@ while true; do
 	clear
 	cat "$BASE_DIR/tmp/current_file_demucs.txt"
 	cat "$BASE_DIR/tmp/current_progress_demucs.txt"
-	sleep 1
+	sleep 3
 	
 done
