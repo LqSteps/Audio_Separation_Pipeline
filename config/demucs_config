@@ -12,7 +12,7 @@ if [ $(hostname) == "Ubuntu-2404-noble-amd64-base" ]; then
 	SEGMENT="--segment 250"
 	SHIFTS="--shifts 4"
 else
-        echo -e "Pipeline rodando localmente, utilizando codec: ${BoldIntenseGreen}ht_demucs...${ResetColor}"
+        echo -e "Pipeline rodando localmente, utilizando modelo: ${BoldIntenseGreen}ht_demucs...${ResetColor}"
         MODEL="ht_demucs"
 	SEGMENT=-"--segment 7"
 	SHIFTS="--shifts 1"
