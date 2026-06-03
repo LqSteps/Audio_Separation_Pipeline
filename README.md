@@ -17,7 +17,7 @@ A documentação completa se encontra em docs/. Este **README.md** comporta o *o
 > CPU i5-13500 14 Core "Raptor Lake-S"\
 > GPU RTX 4000 Ada Genaration ou similares
 
-*Configurações testadas no ambiente de desenvolvimento, resultado satisfatório. A run completa de um arquivo leva de 4 à 10 minutos em qualidades inferiores (--shifts 1 à 3) e 40min a 1 horas (--shifts 10+) em maior qualidade, considerando média de 2h de duração das faixas de áudio.*
+*Configurações testadas no ambiente de desenvolvimento, resultado satisfatório. A run completa de um arquivo leva de 4 à 10 minutos em qualidades inferiores (--shifts 1 à 3) e 40min à 1 hora (--shifts 10+) em maior qualidade, considerando média de 2h de duração das faixas de áudio.*
 
 ## Instruções de Uso
 
