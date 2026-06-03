@@ -48,10 +48,10 @@ processar: (){
 			echo -e "${BoldIntenseCyan}Processando $i...${ResetColor}" >"$current_file_log"
 
 			# Checa se o processamento foi executado corretamente.	
-			if PYTHONWARNINGS="ignore" "$DEMUCS" -n "$MODEL" --overlap 0.1 \
-			"$SHIFTS" "$SEGMENT" -o \
-			"$(dirname "${i}")/Stems" "$i" 2>"$current_progress"; then
-				
+                        total=$((SHIFTS * 4))
+                        if PYTHONWARNINGS="ignore" "$DEMUCS" -n "$MODEL" --overlap 0.1 \
+                        --shifts "$SHIFTS" --segment "$SEGMENT" -o \
+			"$(dirname "${i}")/Stems" "$i" 2> >(counter=1; prev=""; while IFS= read -r -d $'\r' line; do [[ "$prev" == *"100%"* && "$line" != *"100%"* ]] && ((counter++)); echo -e "${BoldIntenseGreen}$counter/$total${ResetColor}|$line\n$(gpustat)" > "$current_progress"; prev="$line"; done) ; then
 				echo -e "${IntenseGreen}$i processado com sucesso${ResetColor}"
 				# Resultado OK > Entrada com Status OK no log.
 				log_ok "$i" "$(dirname "${i}")/Stems/mdx_extra/$(basename "${i%.*}")" "demucs_split.log"
@@ -63,8 +63,8 @@ processar: (){
 
 				# Arquivos que não foram processados são encaminhados ao diretório
 				# "Falhas_Demucs" para posterior inspeção e não serem reprocessados.
-				mkdir -p "$(dirname "${i}")/Falhas_Demucs"
-				mv "$i" "$(dirname "${i}")/Falhas_Demucs"
+				#mkdir -p "$(dirname "${i}")/Falhas_Demucs"
+				#mv "$i" "$(dirname "${i}")/Falhas_Demucs"
 
 			fi	
 		fi

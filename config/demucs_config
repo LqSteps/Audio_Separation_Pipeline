@@ -9,11 +9,11 @@ source "$ROOT_DIR/libs/color_output.sh"
 if [ $(hostname) == "Ubuntu-2404-noble-amd64-base" ]; then
         echo -e "Pipeline rodando em produção, utilizando modelo:${BoldIntenseGreen} mdx_extra...${ResetColor}"
         MODEL="mdx_extra"
-	SEGMENT="--segment 250"
-	SHIFTS="--shifts 4"
+	SEGMENT="270"
+	SHIFTS="10"
 else
         echo -e "Pipeline rodando localmente, utilizando modelo: ${BoldIntenseGreen}ht_demucs...${ResetColor}"
         MODEL="ht_demucs"
-	SEGMENT=-"--segment 7"
-	SHIFTS="--shifts 1"
+	SEGMENT="7"
+	SHIFTS="1"
 fi	
