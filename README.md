@@ -17,7 +17,7 @@ A documentação completa se encontra em docs/. Este **README.md** comporta o *o
 > CPU i5-13500 14 Core "Raptor Lake-S"\
 > GPU RTX 4000 Ada Genaration ou similares
 
-*Configurações testadas no ambiente de desenvolvimento, resultado satisfatório. A run completa de um arquivo leva de 1 à 2h em qualidades inferiores e 3 a 6 horas em maior qualidade, considerando média de 2h de duração das faixas de áudio.*
+*Configurações testadas no ambiente de desenvolvimento, resultado satisfatório. A run completa de um arquivo leva de 4 à 10 minutos em qualidades inferiores (--shifts 1 à 3) e 40min a 1 horas (--shifts 10+) em maior qualidade, considerando média de 2h de duração das faixas de áudio.*
 
 ## Instruções de Uso
 
@@ -439,7 +439,7 @@ Registros de sucessos e falhas ficam em **logs/demucs_split.log**.
 >[transfer_files.sh](scripts/transfer_files.sh)\
 >[network_config](config/network_config)
 
-Transferência de qualquer arquivo **.mp4** ou **.wav** presentes em **Media/Filmes_Saida. Utiliza-se o `rclone`com a opção de nunca enviar novamente o arquivo se ele não for modificado na origem.
+Transferência de qualquer arquivo **.mp4** ou **.wav** presentes em **Media/Filmes_Saida. Utiliza-se o `rsync`com a opção de nunca enviar novamente o arquivo se ele não for modificado na origem.
 
 O destino final é o ambiente de produção da edição, em:
 > <IP_PRODUÇÃO>>:/mnt/16tb/Audio_Separation_Pipeline/Media/Filmes_Saida
