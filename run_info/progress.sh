@@ -7,4 +7,4 @@ readonly ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 source "$ROOT_DIR/libs/pathing.sh"
 
 watch -t -n 3 "cat '$BASE_DIR/tmp/current_file_demucs.txt'; \
-	cat '$BASE_DIR/tmp/current_progress_demucs.txt'; gpustat" --color
+	cat '$BASE_DIR/tmp/current_progress_demucs.txt';gpustat" --color
