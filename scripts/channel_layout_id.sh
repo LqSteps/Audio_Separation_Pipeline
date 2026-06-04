@@ -73,19 +73,14 @@ main (){
 		# Bloco que incrementa contagem de arquivos para a função "count_files" conforme são realocados.
 		echo
 
-	 	if [ "$format_2" == mono ]; then
-                	(( channel_1 ++ ))
-         	elif [ "$format_2" == stereo ]; then
-                	(( channel_2 ++ ))
-        	elif [ "$format_2" == 3_channels ]; then
-                	(( channel_3 ++ ))
-         	elif [ "$format_2" == 6_channels ]; then
-                	(( channel_6 ++ ))
-         	elif [ "$format_2" == 8_channels ]; then
-                	(( channel_8 ++ ))
-        	else
-                	(( unknow_channels ++ ))
-		fi
+		case "$format_2" in
+			mono) (( channel_1 ++ ));;
+			stereo)	(( channel_2 ++ ));;
+			3_channels) (( channel_3 ++ ));;
+			6_channels) (( channel_6 ++ ));;
+			8_channels) (( channel_8 ++ ));;
+			*) (( unknown_channels ++ ));;
+		esac
 	
 	done
 }
