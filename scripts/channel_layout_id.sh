@@ -78,6 +78,8 @@ main (){
 			stereo)	(( channel_2 ++ ));;
 			3_channels) (( channel_3 ++ ));;
 			6_channels) (( channel_6 ++ ));;
+			5.1) (( channel_6 ++ ));;
+			"5.1(side)") (( channel_6 ++ ));;
 			8_channels) (( channel_8 ++ ));;
 			*) (( unknown_channels ++ ));;
 		esac
