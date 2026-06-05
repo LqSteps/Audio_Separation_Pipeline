@@ -1,6 +1,6 @@
 Media/
 scripts/install_dependencies.sh
-./venv.sh
+scripts/venv.sh
 run_info/
 services/
 .venv/
