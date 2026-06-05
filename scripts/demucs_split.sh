@@ -35,7 +35,7 @@ processar: (){
 		remove_from_queue "${i%.*}.mp4"
 
 		# Checa se pasta de saída já existe, se sim, pula, se não, processa.
-		if [ -d "$(dirname "${i}")/Stems/mdx_extra/$(basename "${i%.*}")" ]; then
+		if [ -d "$(dirname "${i}")/Stems/$MODEL/$(basename "${i%.*}")" ]; then
 
 			echo -e "${BoldIntenseYellow}$i já processado${ResetColor}"
 

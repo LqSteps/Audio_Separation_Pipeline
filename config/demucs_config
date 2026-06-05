@@ -7,13 +7,13 @@ source "$ROOT_DIR/libs/color_output.sh"
 # CPU Dev: ht_demucs, -segment 7, shifts 1
 #
 if [ $(hostname) == "Ubuntu-2404-noble-amd64-base" ]; then
-        echo -e "Pipeline rodando em produção, utilizando modelo:${BoldIntenseGreen} mdx_extra...${ResetColor}"
-        MODEL="mdx_extra"
+        echo -e "Pipeline rodando em produção, utilizando modelo:${BoldIntenseGreen}mdx_extra...${ResetColor}"
+	MODEL="mdx_extra"
 	SEGMENT="270"
 	SHIFTS="10"
 else
-        echo -e "Pipeline rodando localmente, utilizando modelo: ${BoldIntenseGreen}ht_demucs...${ResetColor}"
-        MODEL="ht_demucs"
+        echo -e "Pipeline rodando localmente, utilizando modelo: ${BoldIntenseGreen}htdemucs...${ResetColor}"
+        MODEL="htdemucs"
 	SEGMENT="7"
 	SHIFTS="1"
 fi	
