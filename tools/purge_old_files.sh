@@ -39,7 +39,7 @@ for i in "${files[@]}"; do
 
 
 	# Deleta arquivos com mais de X dias (editar variável MaxAge)
-	#find "$Path" 1 -mtime +$MaxAge ! -path '*/.*' \( -name '*.mp4' -o -name '*.mp3' -o -name '*.aac' -o -name '*.wav' -o -name '*.ts' \) -delete
+	find "$Path" 1 -mtime +$MaxAge ! -path '*/.*' \( -name '*.mp4' -o -name '*.mp3' -o -name '*.aac' -o -name '*.wav' -o -name '*.ts' \) -delete
 
 
 done
