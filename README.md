@@ -1,7 +1,7 @@
 # Pipeline de Separação de Voz com Demucs
 Este projeto visa automatizar integralmente uma rotina de extração de diálogos de faixas dubladas, todas as etapas do fluxo são modulares e também podem ser executadas de forma independente.
 
-A documentação completa se encontra em docs/. Este **README.md** comporta o *overview* do projeto. Informação especializada sobre os *scripts*, bibliotecas, arquivos de configuração e serviço são seções a parte.
+A documentação completa se encontra em docs/. Este **README.md** comporta o *overview* do projeto. Informação especializada sobre os *scripts*, bibliotecas, arquivos de configuração e serviços encontra-se documentada em seus respectivos arquivos.
 
 ## Requisitos de Sistema
 > Sistema Operacional: Linux
@@ -17,9 +17,11 @@ A documentação completa se encontra em docs/. Este **README.md** comporta o *o
 > CPU i5-13500 14 Core "Raptor Lake-S"\
 > GPU RTX 4000 Ada Genaration ou similares
 
-*Configurações testadas no ambiente de desenvolvimento, resultado satisfatório. A run completa de um arquivo leva de 4 à 10 minutos em qualidades inferiores (--shifts 1 à 3) e 40min à 1 hora (--shifts 10+) em maior qualidade, considerando média de 2h de duração das faixas de áudio.*
+*Configurações testadas no ambiente de desenvolvimento, resultado satisfatório. A run completa de um arquivo leva de 4 à 10 minutos em qualidades inferiores (--shifts 1 à 3) e 40min à 1 hora em qualidades máximas.*
 
 ## Instruções de Uso
+
+### Opção 1: Instalação Nativa com systemd
 
 1. Clone e entre no repositório:
 ``` bash
@@ -49,20 +51,57 @@ chmod +x scripts/venv.sh
 
 # Passo crucial, dependendo da escolha, pacotes diferentes serão instalados para dar suporte à cada uma.
 # Se sistemas sem GPU instalarem pacotes de GPU, o módulo de separação de voz não funcionará.
-# Para sistemas com GPU, o usuário pode escolher instalar apenas dependências de CPU e utilizar o pipeline com processamento mais lento, embora o projeto conte com fallback integral para CPU se a placa de vídeo falhar ou não for detecada.
+# Para sistemas com GPU, o usuário pode escolher instalar apenas dependências de CPU e utilizar o pipeline com processamento mais lento, embora o projeto conte com fallback integral para CPU se necessário.
 ``` 
 
-5. Execute o script para instalar dependências do *shell* e criar e habilitar o [arquivo de serviço](services/demucs_pipeline.service), que permite o *pipeline* rodar 24/7. 
+5. Execute o script para instalar dependências do *shell* e criar e habilitar o [arquivo de serviço](services/demucs_pipeline.service), que permite o *pipeline* rodar 24/7.
+
+```bash
+chmod +x scripts/install_dependencies.sh && ./scripts/install_dependencies.sh
+```
 
 6. Monte um Google Drive:Filmes_Entrada/ em **Media/Filmes_Entrada**.
 
-7. Caso o sistema não esteja rodando, edite o arquivo de serviço e certifique-se de que o "**WorkingDir**" aponta para o caminho completo do diretório do repositório e "**Exec_Start**" aponte para o caminho absoluto de [start_pipeline.sh](scripts/start_pipeline.sh).
+7. Caso o sistema não esteja rodando, edite o arquivo de serviço e certifique-se de que o "**WorkingDir**" aponta para o caminho completo do diretório do repositório e "**ExecStart**" aponte para o script correto com caminho absoluto.
 
 8. Acompanhe o progresso do demucs e a fila de processamento executando os seguintes scripts com sudo: [run_info/progress.sh](run_info/progress.sh) / [run_info/queue.sh](run_info/queue.sh)
 
->* O serviço pode ser desativado com ```systemctl stop demucs_pipeline```e executado manualmente a partir do [start_pipeline.sh](scripts/start_pipeline.sh).
+>* O serviço pode ser desativado com ```systemctl stop demucs_pipeline``` e executado manualmente a partir do [start_pipeline.sh](scripts/start_pipeline.sh).
+
+---
+
+### Opção 2: Instalação com Docker & Docker Compose
+
+1. Clone o repositório:
+``` bash
+git clone https://github.com/LqSteps/Audio_Separation_Pipeline.git && cd Audio_Separation_Pipeline 
+```
+
+2. Edite o arquivo `docker-compose.yml` e configure os caminhos dos volumes para seu sistema.
+
+3. Inicie o pipeline com Docker Compose:
+
+```bash
+docker-compose up -d
+```
+
+4. Acompanhe os logs:
+
+```bash
+docker-compose logs -f pipeline
+```
+
+5. Para parar o pipeline:
+
+```bash
+docker-compose down
+```
+
+---
+
 ## Estrutura
-[start_pipeline.sh](scripts/start_pipeline.sh) executa os módulos na ordem apresentada. Porém, como dito anteriormente, uma das vantagens deste projeto é modularização completa, cada módulo pode ser executado fora do fluxo padrão e este script também pode ser alterado para atender à demandas diferentes..
+[start_pipeline.sh](scripts/start_pipeline.sh) executa os módulos na ordem apresentada. Porém, como dito anteriormente, uma das vantagens deste projeto é modularização completa, cada módulo pode ser executado independentemente.
+
 1. Reencode Padronizado e Downscale
 
 2. Identificação e Organização por Layout de Áudio
@@ -70,8 +109,9 @@ chmod +x scripts/venv.sh
 4. Extração de Canais/Áudio - 6 & 8 Canais.
 5. Separação de Diálogo com Demucs
 6. Transferência de Arquivos de Saída para Produção
+
 ## Entrada de Arquivos
-Arquivos são hospedados no Google Drive, montados via `rclone` em **Media/Filmes_Entrada** (diretórios criados com o script de instalação), esta etapa é configurada no ambiente de produção. 
+Arquivos são hospedados no Google Drive, montados via `rclone` em **Media/Filmes_Entrada** (diretórios criados com o script de instalação), esta etapa é configurada no ambiente de produção.
 
 Todos vídeos enviados ao Google Drive devem estar no caminho Filmes_Entrada, seguindo a estrutura abaixo:
 ```text
@@ -86,8 +126,9 @@ Filmes_Entrada/
     ├── Filme_Y_JP.mov
     └── Filme_Y_RU.ts
 ```
-Note que é esperado que os nomes dos arquivos não contenham espaços e caractéres especiais, o sistema consegue inferi-los e eliminar caracteres inválidos de qualquer maneira, mas é ideal manter um padrão.
-Os códigos de idioma são apenas uma formalidade, não afetam em nada o funcionamento dos scripts, porém, como acontece com a convenção de nomenclatura de arquivos, é interessante manter um padrão fixo.
+Note que é esperado que os nomes dos arquivos não contenham espaços e caractéres especiais, o sistema consegue inferi-los e eliminar caracteres inválidos de qualquer maneira, mas é ideal manter esta convenção.
+
+Os códigos de idioma são apenas uma formalidade, não afetam em nada o funcionamento dos scripts, porém, como acontece com a convenção de nomenclatura de arquivos, é interessante manter um padrão.
 
 Por último, o sistema foi projetado para lidar apenas com os seguintes formatos de vídeo:
 >  - .mp4
@@ -104,7 +145,7 @@ Os arquivos nos formatos aceitos na pasta de entrada são processados pelo scrip
 >- GPU Disponível = Todos arquivos são padronizados para .mp4 utilizando o codec `h264_nvenc`.
 >- Fallback para CPU = Todos arquivos são padronizados para .mp4 utilizando o codec `libx264`.
 
-Após o reencode de cada arquivo, o mesmo sofre um downscale para 480p, afim de reduzir o espaço ocupado e facilidade de download e importação em softwares de edição, visto que apenas o áudio é aproveitado na renderização, o vídeo funciona como apoio visual para edição de áudio.
+Após o reencode de cada arquivo, o mesmo sofre um downscale para 480p, afim de reduzir o espaço ocupado e facilidade de download e importação em softwares de edição, visto que apenas o áudio é relevante para a separação.
 
 Ao final do processo, o arquivo é renomeado para contar com "_480p", como Filme_X_PT_BR_480p.mp4, com o intuito de identificar arquivos processados e evitar que os mesmos entrem na fila novamente.
 
@@ -178,7 +219,7 @@ Registros de entrada e saída ficam disponíveis em **logs/channel_id.log**.
 #### Arquivos responsáveis
 >[extract_mono_stereo.sh](scripts/extract_mono_stereo.sh)
 ---
-Lê qualquer arquivo **.mp4** presente nos  [diretórios mono/stereo de saída do Módulo 02](#estrutura-de-saída-de-arquivos) e extrai o áudio para um novo arquivo de mesmo nome e no mesmo diretório, seguindo os seguintes parâmetros:
+Lê qualquer arquivo **.mp4** presente nos  [diretórios mono/stereo de saída do Módulo 02](#estrutura-de-saída-de-arquivos) e extrai o áudio para um novo arquivo de mesmo nome e no mesmo diretório com as especificações:
 > Codec: pcm_f32le - Formato: .wav
 
 Portanto, padroniza-se todos os áudios para evitar discrepância e resultados inesperados no [Módulo 05](#módulo-05---separação-de-diálogo-com-demucs)
@@ -242,9 +283,9 @@ Registros de entrada e saída stereo ficam disponíveis em **logs/stereo_wav.log
 #### Arquivos Responsáveis
 > [split_multichannel.sh](scripts/split_multichannel.sh)
 ---
-Lê qualquer arquivo **.mp4** presente nos  [diretórios 3_channels/6_channels de saída do Módulo 02](#estrutura-de-saída-de-arquivos) e extrai os canais de áudio como arquivos **.wav** separados no subdiretório **Canais_Separados**.
+Lê qualquer arquivo **.mp4** presente nos  [diretórios 3_channels/6_channels de saída do Módulo 02](#estrutura-de-saída-de-arquivos) e extrai os canais de áudio como arquivos **.wav** separados dentro de um subdiretório *Canais_Separados*.
 
-O canal **FC** (*front central*) sempre contém a maior quantidade de informação referente à diálogos, mas os outros canais também podem ser aproveitados na edição para reconstrução de partes perdidas no **FC**.
+O canal **FC** (*front central*) sempre contém a maior quantidade de informação referente à diálogos, mas os outros canais também podem ser aproveitados na edição para reconstrução de pistas de áudio.
 
 ### Estrutura de Saída de Arquivos
 
@@ -360,7 +401,7 @@ Usa de entrada todos os arquivos **.wav** disponíveis recursivamente nos diret�
 
 Para cada *input*, utiliza-se o Demucs para extrair diálogos da faixa de áudio, além de ruídos, instrumentos etc.
 
-> *Outras faixas geradas pelo Demucs, como **other.wav** podem conter áudio relevante para auxiliar no processo de edição, que ainda que não sejam diálogos, podem ajudar a reconstruir o áudio completo da faixa e promover maior detalhamento.*
+> *Outras faixas geradas pelo Demucs, como **other.wav** podem conter áudio relevante para auxiliar no processo de edição, que ainda que não sejam diálogos, podem ajudar a reconstruir o áudio original ou eliminar ruídos.*
 
 ### Estrutura de Saída de Arquivos
 
@@ -428,22 +469,23 @@ Filmes_Saida/
 
 ### Arquivos Problemáticos
 
-Faixas de áudio que o Demucs não conseguiu processar ou causaram *crash* no sistema são enviadas para **Falhas_Demucs** de acordo com a [estrutura de saída de arquivos do Módulo 04](#estrutura-de-saída-de-arquivos-3).
+Faixas de áudio que o Demucs não conseguiu processar ou causaram *crash* no sistema são enviadas para **Falhas_Demucs** de acordo com a [estrutura de saída de arquivos do Módulo 04](#estrutura-de-saída-de-arquivos).
 
 Isto ocorre para evitar o sistema entrar em um *loop* de processamento de faixas que o *script* não consegue processar, visto que ele não busca arquivos neste caminho.
 
 ### Logging
 Registros de sucessos e falhas ficam em **logs/demucs_split.log**.
+
 ## Módulo 06 - Transferência de Arquivos de Saída para Produção
 #### Arquivos Responsáveis
 >[transfer_files.sh](scripts/transfer_files.sh)\
 >[network_config](config/network_config)
 
-Transferência de qualquer arquivo **.mp4** ou **.wav** presentes em **Media/Filmes_Saida. Utiliza-se o `rsync`com a opção de nunca enviar novamente o arquivo se ele não for modificado na origem.
+Transferência de qualquer arquivo **.mp4** ou **.wav** presentes em **Media/Filmes_Saida**. Utiliza-se o `rsync` com a opção de nunca enviar novamente o arquivo se ele não for modificado na origem.
 
 O destino final é o ambiente de produção da edição, em:
-> <IP_PRODUÇÃO>>:/mnt/16tb/Audio_Separation_Pipeline/Media/Filmes_Saida
+> <IP_PRODUÇÃO>:/mnt/16tb/Audio_Separation_Pipeline/Media/Filmes_Saida
 
 ## Próximos Passos
 - Adicionar suporte à arquivos de 8 canais.
-- Implementar paralelismo no [Módulo 06 - Transferências](#módulo-06---transferência-de-arquivos-de-saída-para-produção), para que seja executado 24/7 sem depender da ordem corrente do *pipeline*.
+- Implementar paralelismo no [Módulo 06 - Transferências](#módulo-06---transferência-de-arquivos-de-saída-para-produção), para que seja executado 24/7 sem depender da ordem corrente do pipeline.
