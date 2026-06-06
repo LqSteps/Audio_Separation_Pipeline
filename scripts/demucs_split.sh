@@ -54,7 +54,7 @@ processar: (){
 			"$(dirname "${i}")/Stems" "$i" 2> >(counter=1; prev=""; while IFS= read -r -d $'\r' line; do [[ "$prev" == *"100%"* && "$line" != *"100%"* ]] && ((counter++)); echo -e "${BoldIntenseGreen}$counter/$total${ResetColor}|$line" > "$current_progress"; prev="$line"; done) ; then
 				echo -e "${IntenseGreen}$i processado com sucesso${ResetColor}"
 				# Resultado OK > Entrada com Status OK no log.
-				log_ok "$i" "$(dirname "${i}")/Stems/mdx_extra/$(basename "${i%.*}")" "demucs_split.log"
+				log_ok "$i" "$(dirname "${i}")/Stems/$MODEL/$(basename "${i%.*}")" "demucs_split.log"
 
 			else
 				echo -e "${BoldIntenseRed}$i falhou, realocado para o diretório $(dirname "${i}")/Falhas_Demucs${ResetColor}"
@@ -63,8 +63,8 @@ processar: (){
 
 				# Arquivos que não foram processados são encaminhados ao diretório
 				# "Falhas_Demucs" para posterior inspeção e não serem reprocessados.
-				#mkdir -p "$(dirname "${i}")/Falhas_Demucs"
-				#mv "$i" "$(dirname "${i}")/Falhas_Demucs"
+				mkdir -p "$(dirname "${i}")/Falhas_Demucs"
+				mv "$i" "$(dirname "${i}")/Falhas_Demucs"
 
 			fi	
 		fi
