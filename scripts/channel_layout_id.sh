@@ -33,7 +33,7 @@ main (){
 
 	
 	mapfile -d "" files < <(
-		find "$INPUT_DIR" \
+		find "$ROOT_DIR/tmp/Filmes_Entrada" \
 		-type f \
 		-iname "*mp4" \
 		-print0

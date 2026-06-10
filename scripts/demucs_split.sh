@@ -75,4 +75,5 @@ processar: (){
 processar: mono
 processar: stereo
 processar: 5.1 FC
-#processar: 6_channels FC
+processar: "5.1(side)" FC
+processar: 6_channels FC
