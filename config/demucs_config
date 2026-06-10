@@ -10,7 +10,7 @@ if [ $(hostname) == "Ubuntu-2404-noble-amd64-base" ]; then
         echo -e "Pipeline rodando em produção, utilizando modelo:${BoldIntenseGreen}mdx_extra...${ResetColor}"
 	MODEL="mdx_extra"
 	SEGMENT="270"
-	SHIFTS="10"
+	SHIFTS="20"
 else
         echo -e "Pipeline rodando localmente, utilizando modelo: ${BoldIntenseGreen}htdemucs...${ResetColor}"
         MODEL="htdemucs"
