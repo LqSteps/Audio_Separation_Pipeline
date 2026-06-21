@@ -10,5 +10,6 @@ while true; do
 	"$SCRIPT_DIR/split_multichannel.sh"
 	"$SCRIPT_DIR/demucs_split.sh"
 	"$SCRIPT_DIR/transfer_files.sh"
+	"$SCRIPT_DIR/transfer_logs.sh"
 	sleep 120
 done
