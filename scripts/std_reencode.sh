@@ -26,21 +26,23 @@ main (){
         for i in "${files[@]}"; do
                 relative="${i#$INPUT_DIR/}"
                 output="$ROOT_DIR/tmp/Filmes_Entrada/$(dirname "$relative")/$(basename "${i%.*}")_480p.mp4"
-                mkdir -p "$(dirname "$output")"
+		input="$ROOT_DIR/tmp/Filmes_Entrada/$relative"
+                mkdir -p "$(dirname "$input")"
+		mv "$i" "$input"
 
-                if ffmpeg -i "$i" -c:v "$FFMPEG_CODEC" \
+                if ffmpeg -i "$input" -c:v "$FFMPEG_CODEC" \
                         -s 720x480 \
                         -c:a copy "$output" \
                         -hide_banner; then
-                        log_ok "$i" "$output" "std_reencode.log"
+                        log_ok "$input" "$output" "std_reencode.log"
                         echo "$output" >> "$queue"
-                        rm "$i"
+                        rm "$input"
                 else
                         echo "Corrompido, pulando..."
-                        log_erro "$i" "$i.corrupted" "std_reencode.log"
+                        log_erro "$input" "$input.corrupted" "std_reencode.log"
                         remove_from_queue "$i"
                         rm -f "$output"
-                        mv "$i" "$i.corrupted"
+                        mv "$input" "$input.corrupted"
                 fi
         done
 }
