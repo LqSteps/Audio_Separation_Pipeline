@@ -24,12 +24,13 @@ echo "Fila:" >> "$queue"
 # Função principal responsável por padronizar arquivos de entrada em h264 e 480p.
 main (){
         for i in "${files[@]}"; do
-                relative="${i#$INPUT_DIR/}"
+                relative="${i#"$INPUT_DIR"/}"
                 output="$ROOT_DIR/tmp/Filmes_Entrada/$(dirname "$relative")/$(basename "${i%.*}")_480p.mp4"
 		input="$ROOT_DIR/tmp/Filmes_Entrada/$relative"
                 mkdir -p "$(dirname "$input")"
-		mv "$i" "$input"
-
+		#echo "[DEBUG] file: $i"
+		rclone moveto "$i" "$input"
+		#exit 0
                 if ffmpeg -i "$input" -c:v "$FFMPEG_CODEC" \
                         -s 720x480 \
                         -c:a copy "$output" \

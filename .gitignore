@@ -12,3 +12,4 @@ Stems/
 Falhas_Demucs/
 .venv/
 tmp/
+*.log
