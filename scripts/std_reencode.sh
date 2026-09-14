@@ -2,6 +2,7 @@
 
 
 readonly ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
 # Consultar documentação na seção "libs".
 source "$ROOT_DIR/libs/pathing.sh"
 source "$ROOT_DIR/libs/quick_log.sh"
@@ -11,6 +12,7 @@ source "$ROOT_DIR/libs/color_output.sh"
 source "$ROOT_DIR/config/ffmpeg_config"
 
 echo -e "\n${Bold}[SISTEMA] EXECUÇÃO: DOWNSCALE E REENCODE DOS VÍDEOS${ResetColor}\n"
+
 # Array que contém arquivos de vídeo, com exceção dos que já foram reencodados e comprimidos para 480p.
 mapfile -d "" files < <(
         find "$INPUT_DIR" -type f \
@@ -27,6 +29,7 @@ echo "Fila:" >> "$queue"
 # Função principal responsável por padronizar arquivos de entrada em h264 e 480p.
 main (){
         for i in "${files[@]}"; do
+
                 relative="${i#"$INPUT_DIR"/}"
                 output="$ROOT_DIR/tmp/Filmes_Entrada/$(dirname "$relative")/$(basename "${i%.*}")_480p.mp4"
 		input="$ROOT_DIR/tmp/Filmes_Entrada/$relative"
@@ -34,6 +37,7 @@ main (){
 		#echo "[DEBUG] file: $i"
 		rclone --config /dev/null moveto "$i" "$input"
 		#exit 0
+		
                 if ffmpeg -loglevel -8 -i "$input" -c:v "$FFMPEG_CODEC" \
                         -s 720x480 \
                         -c:a copy "$output" \
@@ -52,6 +56,7 @@ main (){
         done
 
 }
+
 main
 
 echo -e "\n${Bold}[SISTEMA] FINALIZADO/FILA VAZIA.${ResetColor}\n"
