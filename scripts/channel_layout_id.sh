@@ -11,14 +11,16 @@ source "$ROOT_DIR/libs/quick_log.sh"
 source "$ROOT_DIR/libs/color_output.sh"
 source "$ROOT_DIR/libs/queue_tracker.sh"
 
+echo -e "\n${Bold}[SISTEMA] EXECUÇÃO: IDENTIFICAÇÃO DE LAYOUTS DE ÁUDIO${ResetColor}"
+
 # Função responsável por contar múmero de arquivos identificados por canal.
 count_files () {
-        echo "Arquivos com 8 Canais: $channel_8"
-        echo "Arquivos com 6 Canais: $channel_6"
-        echo "Arquivos com 3 Canais: $channel_3"
-        echo "Arquivos com 2 Canais: $channel_2"
-        echo "Arquivos com 1 Canal: $channel_1"
-	echo -e "Arquivos Com Layout Não Específicado: $unknow_channels\n"
+        echo -e "${IntenseCyan}[INFO] Arquivos com 8 Canais: $channel_8${ResetColor}"
+        echo -e "${IntenseCyan}[INFO] Arquivos com 6 Canais: $channel_6${ResetColor}"
+        echo -e "${IntenseCyan}[INFO] Arquivos com 3 Canais: $channel_3${ResetColor}"
+        echo -e "${IntenseCyan}[INFO] Arquivos com 2 Canais: $channel_2${ResetColor}"
+        echo -e "${IntenseCyan}[INFO] Arquivos com 1 Canal: $channel_1${ResetColor}"
+	echo -e "${IntenseCyan}[INFO] Arquivos Com Layout Não Específicado: $unknow_channels\n${ResetColor}"
 }
 
 # Função responsável por realocar arquivos de áudio para diretórios com nome do layout + subdiretório com mesmo nome do de entrada que contém as dublagens.
@@ -54,7 +56,7 @@ main (){
 
 		# Lógica que impede arquivos sem áudio de serem processados e criarem pastas vazias ou serem movidos no mesmo lugar.
 		if [ -z "$format_2" ]; then
-    			echo -e "${IntenseYellow}$i não contém stream(s) de áudio!${ResetColor}\n"
+    			echo -e "${BoldIntenseYellow}[AVISO] $i não contém stream(s) de áudio!${ResetColor}\n"
     			remove_from_queue "$i"
     			continue
 		fi
@@ -64,7 +66,7 @@ main (){
 
 		# Cria e move os arquivos para diretórios dos layouts e subdiretório com mesmo nome da pasta do filme que contém as dublagens.
 		mkdir -p "$OUTPUT_DIR/$format_2/${clean_input#*/}" 2>/dev/null
-		echo "Realocado para pasta $OUTPUT_DIR/$format_2/${clean_input#*/}"
+		echo -e "${BoldIntenseCyan}[INFO] Realocado para pasta $OUTPUT_DIR/$format_2/${clean_input#*/}${ResetColor}"
 		mv "$i" "$OUTPUT_DIR/$format_2/${clean_input#*/}"
 
 		# Logging de realocação de arquivos.
@@ -85,6 +87,7 @@ main (){
 		esac
 	
 	done
+
 }
 
 # Execução da função do loop
@@ -96,4 +99,4 @@ count_files
 # Desabilita a opção da shell, se por algum motivo este script não for executado via subshell.
 shopt -u nullglob
 
-
+echo -e "\n${Bold}[SISTEMA] FINALIZADO/FILA VAZIA.${ResetColor}\n"

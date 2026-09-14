@@ -2,6 +2,11 @@
 # Descrição: Executa pipeline completo respeitando a ordem dos scripts do projeto, evita-se paralelismo para scripts não receberem inputs inacabados de passos anteriores.
 readonly ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
+source "$ROOT_DIR/libs/color_output.sh"
+
+time=120
+
+echo -e "${Bold}[SISTEMA] Iniciando pipeline de extração de dublagens...${ResetColor}"
 while true; do
 	source "$ROOT_DIR/libs/pathing.sh"
 	"$SCRIPT_DIR/std_reencode.sh"
@@ -11,5 +16,7 @@ while true; do
 	"$SCRIPT_DIR/demucs_split.sh"
 	"$SCRIPT_DIR/transfer_files.sh"
 	"$SCRIPT_DIR/transfer_logs.sh"
-	sleep 120
+	sleep "$time"
+
+echo -e "${Bold}[SISTEMA] Aguardando $time segundos para reinício do ciclo.${ResetColor}"
 done

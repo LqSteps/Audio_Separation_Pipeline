@@ -6,6 +6,9 @@ readonly ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 source "$ROOT_DIR/libs/pathing.sh"
 source "$ROOT_DIR/libs/quick_log.sh"
 source "$ROOT_DIR/libs/queue_tracker.sh"
+source "$ROOT_DIR/libs/color_output.sh"
+
+echo -e "\n${Bold}[SISTEMA] EXECUÇÃO: EXTRAÇÃO DE ÁUDIO 3/6 CANAIS${ResetColor}"
 
 channel3_dir="$OUTPUT_DIR/3_channels"
 channel6_dir="$OUTPUT_DIR/6_channels"
@@ -38,8 +41,8 @@ processar_channel3 (){
 
                 if [ -d "$split_path" ]; then
 
-                        echo -e "$(basename "$i") existe, pulando..."
-
+                        #echo -e "$(basename "$i") existe, pulando..."
+			continue
                 else
 
                         # Após mapeamento, os canais são padronizados para pcm float em .wav e enviados para
@@ -53,17 +56,20 @@ processar_channel3 (){
 
                                 # Processamento OK - Registro no log com status OK.
                                 log_ok "$i" "$split_path" "extrair_3canais.log"
+				echo -e "${IntenseBoldGreen}[SUCESSO] $i convertido para WAV.${ResetColor}"
                         else
                                 # Processamento ERRO - Registro no log com status ERRO.
                                 log_erro "$i" "$split_path" "extrair_3canais.log"
                                 remove_from_queue "$i"
                                 # Adiciona extensão .corrupted ao arquivo, para inspeção posterior e evitar reprocessamento.
                                 mv "$i" "$i.corrupted"
+				echo -e "${IntenseBoldRed}[ERRO] $i corrompido.${ResetColor}"
                         fi
 
                 fi
 
         done
+
 }
 
 # Mesma lógica da função processar_channel3, porém com o payload do ffmpeg voltado para o mapeamento de layouts de audio 5.1.
@@ -78,11 +84,12 @@ processar_5_1_layouts (){
 
                 if [ -d "$split_path" ]; then
 
-                        echo -e "$(basename "$i") existe, pulando..."
+			#echo -e "$(basename "$i") existe, pulando..."
+			continue
 
                 else
                         mkdir -p "$split_path"
-                        if ffmpeg -hide_banner -vn -i "$i" \
+                        if ffmpeg -hide_banner -loglevel -8 -vn -i "$i" \
                         -filter_complex "[0:a]pan=1c|c0=c0[FL];[0:a]pan=1c|c0=c1[FR];[0:a]pan=1c|c0=c2[FC];[0:a]pan=1c|c0=c3[LFE];[0:a]pan=1c|c0=c4[SL];[0:a]pan=1c|c0=c5[SR]" \
                         -map "[FL]"  -c:a pcm_f32le "$split_path/FL.wav" \
                         -map "[FR]"  -c:a pcm_f32le "$split_path/FR.wav" \
@@ -92,9 +99,13 @@ processar_5_1_layouts (){
                         -map "[SR]"  -c:a pcm_f32le "$split_path/SR.wav"; then
 
                                 log_ok "$i" "$split_path" "extrair_6_canais.log"
+				echo -e "${BoldIntenseGreen}[SUCESSO] $i convertido para WAV.${ResetColor}"
+
                         else
                                 log_erro "$i" "$split_path" "extrair_6_canais.log"
                                 mv "$i" "$i.corrupted"
+				echo -e "${BoldIntenseRed}[ERRO] $i corrompido.${ResetColor}"
+
                         fi
 
                 fi
@@ -105,25 +116,28 @@ processar_5_1_layouts (){
 # CALLS DAS FUNÇÔES POR LAYOUT 
 
 # 3.0
-echo "Buscando arquivos com layout 3.0..."
+#echo "Buscando arquivos com layout 3.0..."
 files files3 channel3_dir
 
 processar_channel3 files3
 
 # 6.0
-echo "Buscando arquivos com layout 6.0..."
+#echo "Buscando arquivos com layout 6.0..."
 files files6 channel6_dir
 
 processar_5_1_layouts files6
 
 # 5.1(side)
-echo "Buscando arquivos com layout 5.1(side)..."
+#echo "Buscando arquivos com layout 5.1(side)..."
 files files5_1_side channel_5_1_side
 
 processar_5_1_layouts files5_1_side
 
-echo "Buscando arquivos com layout 5.1..."
+#echo "Buscando arquivos com layout 5.1..."
 # 5.1
 files files5_1 channel_5_1
 
 processar_5_1_layouts files5_1
+
+
+echo -e "\n${Bold}[SISTEMA] FINALIZADO/FILA VAZIA.${ResetColor}\n"

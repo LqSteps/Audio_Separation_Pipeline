@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+
+
 readonly ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 # Consultar documentação na seção "libs".
 source "$ROOT_DIR/libs/pathing.sh"
@@ -8,6 +10,7 @@ source "$ROOT_DIR/libs/color_output.sh"
 # Consultar documentação na seção "config".
 source "$ROOT_DIR/config/ffmpeg_config"
 
+echo -e "\n${Bold}[SISTEMA] EXECUÇÃO: DOWNSCALE E REENCODE DOS VÍDEOS${ResetColor}\n"
 # Array que contém arquivos de vídeo, com exceção dos que já foram reencodados e comprimidos para 480p.
 mapfile -d "" files < <(
         find "$INPUT_DIR" -type f \
@@ -29,22 +32,26 @@ main (){
 		input="$ROOT_DIR/tmp/Filmes_Entrada/$relative"
                 mkdir -p "$(dirname "$input")"
 		#echo "[DEBUG] file: $i"
-		rclone moveto "$i" "$input"
+		rclone --config /dev/null moveto "$i" "$input"
 		#exit 0
-                if ffmpeg -i "$input" -c:v "$FFMPEG_CODEC" \
+                if ffmpeg -loglevel -8 -i "$input" -c:v "$FFMPEG_CODEC" \
                         -s 720x480 \
                         -c:a copy "$output" \
                         -hide_banner; then
                         log_ok "$input" "$output" "std_reencode.log"
                         echo "$output" >> "$queue"
+			echo -e "${BoldIntenseGreen}[SUCESSO] $input downscaled para 480p, salvo em $output.${ResetColor}"
                         rm "$input"
                 else
-                        echo "Corrompido, pulando..."
                         log_erro "$input" "$input.corrupted" "std_reencode.log"
                         remove_from_queue "$i"
                         rm -f "$output"
+			echo -e "${BoldIntenseRed}[ERRO] $input corrompido, não foi processado.${ResetColor}"
                         mv "$input" "$input.corrupted"
                 fi
         done
+
 }
 main
+
+echo -e "\n${Bold}[SISTEMA] FINALIZADO/FILA VAZIA.${ResetColor}\n"

@@ -15,6 +15,8 @@ source "$ROOT_DIR/libs/queue_tracker.sh"
 # Consultar documentação na seção "config".
 source "$ROOT_DIR/config/demucs_config"
 
+echo -e "\n${Bold}[SISTEMA] EXECUÇÃO: SEPARAÇÃO DE TRILHAS SONORAS${ResetColor}"
+
 # Função que acha arquivos .wav que não foram processados e roda o demucs. 
 # O argumento 1 indica qual layout de canais o script  busca, o 2 indica qual faixa será processada, referente a layouts de 6 canais ou mais.
 processar: (){
@@ -37,7 +39,8 @@ processar: (){
 		# Checa se pasta de saída já existe, se sim, pula, se não, processa.
 		if [ -d "$(dirname "${i}")/Stems/$MODEL/$(basename "${i%.*}")" ]; then
 
-			echo -e "${BoldIntenseYellow}$i já processado${ResetColor}"
+			#echo -e "${BoldIntenseYellow}$i já processado${ResetColor}"
+			continue
 
 		else
 			mkdir -p "$BASE_DIR/tmp"
@@ -45,19 +48,21 @@ processar: (){
 			touch "$BASE_DIR/tmp/current_progress_demucs.txt"
 			current_file_log="$BASE_DIR/tmp/current_file_demucs.txt"
 			current_progress="$BASE_DIR/tmp/current_progress_demucs.txt"
-			echo -e "${BoldIntenseCyan}Processando $i...${ResetColor}" >"$current_file_log"
+			echo -e "${BoldIntenseCyan}[INFO] Processando $i...${ResetColor}" >"$current_file_log"
 
 			# Checa se o processamento foi executado corretamente.	
+			echo -e "${BoldIntenseCyan}[INFO] Processando $i...${ResetColor}"
+			
                         total=$((SHIFTS * 4))
                         if PYTHONWARNINGS="ignore" "$DEMUCS" -n "$MODEL" --overlap 0.1 \
                         --shifts "$SHIFTS" --segment "$SEGMENT" -o \
-			"$(dirname "${i}")/Stems" "$i" 2> >(counter=1; prev=""; while IFS= read -r -d $'\r' line; do [[ "$prev" == *"100%"* && "$line" != *"100%"* ]] && ((counter++)); echo -e "${BoldIntenseGreen}$counter/$total${ResetColor}|$line" > "$current_progress"; prev="$line"; done) ; then
-				echo -e "${IntenseGreen}$i processado com sucesso${ResetColor}"
+			"$(dirname "${i}")/Stems" "$i" >/dev/null  2> >(counter=1; prev=""; while IFS= read -r -d $'\r' line; do [[ "$prev" == *"100%"* && "$line" != *"100%"* ]] && ((counter++)); echo -e "${BoldIntenseGreen}$counter/$total${ResetColor}|$line" > "$current_progress"; prev="$line"; done) ; then
+				echo -e "${BoldIntenseGreen}[SUCESSO] $i processado com sucesso.${ResetColor}"
 				# Resultado OK > Entrada com Status OK no log.
 				log_ok "$i" "$(dirname "${i}")/Stems/$MODEL/$(basename "${i%.*}")" "demucs_split.log"
 
 			else
-				echo -e "${BoldIntenseRed}$i falhou, realocado para o diretório $(dirname "${i}")/Falhas_Demucs${ResetColor}"
+				echo -e "${BoldIntenseRed}[ERRO] $i falhou, realocado para o diretório $(dirname "${i}")/Falhas_Demucs${ResetColor}"
 				# Resultado ERRO > Entrada com Status ERRO no log.
 				log_erro "$i" "$(dirname "${i}")/Falhas_Demucs/$(basename "${i}")" "demucs_split.log"
 
@@ -69,6 +74,7 @@ processar: (){
 			fi	
 		fi
 	done
+
 }
 
 # Execução da função com argumentos como descrito no comentário acima da função "processar". 
@@ -77,3 +83,5 @@ processar: stereo
 processar: 5.1 FC
 processar: "5.1(side)" FC
 processar: 6_channels FC
+
+echo -e "\n${Bold}[SISTEMA] FINALIZADO/FILA VAZIA.${ResetColor}\n"
