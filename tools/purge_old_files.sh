@@ -20,18 +20,19 @@ source "$ROOT_DIR/libs/color_output.sh"
 
 Path="$ROOT_DIR/Media"
 
-#Cria log em /GitHub/Repos/Demucs_Split/Scripts/stdout
-
 mapfile -d "" files < <(
 
 	find "$Path" \
 	\( -name '.*' -prune \) -o \
-	\( -mtime +"$MaxAge" \( -name '*.mp4' \
+	\( -mtime +$MaxAge \( -name '*.mp4' \
 	-o -name '*.mp3' -o -name "*.wav" \
 	-o -name '*.aac' \
 	-o -name '*.ts' \) \) \
+	! -path "$ROOT_DIR/Media/Filmes_Entrada" \
 	-print0
 )
+
+size="$(du -ch "${files[@]}" | tail -1 | cut -d "	" -f 1)"
 
 for i in "${files[@]}"; do
 
@@ -43,8 +44,6 @@ for i in "${files[@]}"; do
 
 
 done
-
-size="$(du -ch "${files[@]}" | tail -1 | cut -d "	" -f 1)"
 
 current_space="$(df -h | grep -i "/dev/md2" | cut -d " " -f 32)"
 total_space="$(df -h | grep -i "/dev/md2" | cut -d " " -f 30)"

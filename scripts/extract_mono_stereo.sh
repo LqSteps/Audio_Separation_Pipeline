@@ -5,6 +5,9 @@ readonly ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 source "$ROOT_DIR/libs/pathing.sh"
 source "$ROOT_DIR/libs/quick_log.sh"
 source "$ROOT_DIR/libs/queue_tracker.sh"
+source "$ROOT_DIR/libs/color_output.sh"
+
+echo -e "\n${Bold}[SISTEMA] EXECUÇÃO: EXTRAÇÃO DE ÁUDIO MONO/STEREO${ResetColor}"
 
 # Função responsável pelo processamento da versão em .wav pcm. O argumento 1 faz a função trabalhar apenas com o layout de áudio indicado, 
 # este script foi pensado para aceitar mono, stereo e 3.0.
@@ -24,31 +27,34 @@ processar (){
 		
 		# Lógica que evita reprocessamento de arquivos que já existem em .wav.
 		if [ -f "${i%.*}.wav" ]; then
-			echo "${i%.*}.wav já existe, pulando..."
+			#echo "${i%.*}.wav já existe, pulando..."
 		continue
 		fi
 	
-		if ffmpeg -vn -v error \
+		if ffmpeg -loglevel -8 -vn -v error \
 		-i "$i" \
 		-hide_banner \
 		-c:a pcm_f32le \
 		"${i%.*}.wav"; then
 
 			# Processamento funcionou, registrado no log.
-			echo "$(basename "$i") Convertido para WAV"
+			echo -e "${BoldIntenseGreen}[SUCESSO] $(basename "$i") Convertido para WAV${ResetColor}."
 			log_ok "$i" "${i%.*}.wav" "$1_wav.log"
 		else
 			# Processamento falhou, registrado no log e arquivo recebe a extensão .corrupted, 
 			# para evitar reprocessamento e indicar estrutura problemática.
 			mv "$i" "${i%.*}.corrupted"
-			echo "Corrompido, pulando ..."
+			echo "${BoldIntenseRed}[ERRO] $(basename "$i") corrompido.${ResetColor}"
 			log_erro "$i" "${i%.*}.corrupted" "$1_wav.log"
 			remove_from_queue "$i"
 		fi
 
 	done
+
 }
 
 # Execução da função com layouts de áudio escolhidos.
 processar mono
 processar stereo
+
+echo -e "\n${Bold}[SISTEMA] FINALIZADO/FILA VAZIA.${ResetColor}\n"

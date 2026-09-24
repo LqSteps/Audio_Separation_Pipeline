@@ -12,7 +12,6 @@ services:
       - /root/Audio_Separation_Pipeline/logs:/app/logs
       - /root/Audio_Separation_Pipeline/tmp:/app/tmp
       - /root/.ssh:/root/.ssh:ro
-      - /usr/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu:ro
     deploy:
       resources:
         reservations:
