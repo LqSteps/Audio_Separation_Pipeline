@@ -4,6 +4,7 @@ readonly ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 while true; do
 	source "$ROOT_DIR/libs/pathing.sh"
+	"$SCRIPT_DIR/backup.sh"
 	"$SCRIPT_DIR/std_reencode.sh"
 	"$SCRIPT_DIR/channel_layout_id.sh"
 	"$SCRIPT_DIR/extract_mono_stereo.sh"
@@ -11,5 +12,6 @@ while true; do
 	"$SCRIPT_DIR/demucs_split.sh"
 	"$SCRIPT_DIR/transfer_files.sh"
 	"$SCRIPT_DIR/transfer_logs.sh"
+	rm -rf "$ROOT_DIR/tmp/backup/*"
 	sleep 120
 done
