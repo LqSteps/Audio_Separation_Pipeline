@@ -28,7 +28,8 @@ mapfile -d "" files < <(
 	-o -name '*.mp3' -o -name "*.wav" \
 	-o -name '*.aac' \
 	-o -name '*.ts' \) \) \
-	! -path "$ROOT_DIR/Media/Filmes_Entrada" \
+	\( ! -path "$ROOT_DIR/Media/Filmes_Entrada" \
+	-o ! -path "$ROOT_DIR/tmp" \) \
 	-print0
 )
 
