@@ -34,7 +34,13 @@ processar: (){
 	# Processamento do Demucs.
 	for i in "${files[@]}"; do
 
-		remove_from_queue "${i%.*}.mp4"
+		# Tira o vídeo da fila. Nos layouts multicanal o arquivo é sempre FC.wav, então o nome
+		# do vídeo é o da pasta em Canais_Separados (antes saía "FC.mp4" e nada era removido).
+		if [ -n "$2" ]; then
+			remove_from_queue "$(dirname "$i").mp4"
+		else
+			remove_from_queue "${i%.*}.mp4"
+		fi
 
 		# Checa se pasta de saída já existe, se sim, pula, se não, processa.
 		if [ -d "$(dirname "${i}")/Stems/$MODEL/$(basename "${i%.*}")" ]; then
