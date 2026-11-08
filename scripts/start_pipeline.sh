@@ -11,6 +11,7 @@ while true; do
 	source "$ROOT_DIR/libs/pathing.sh"
 	"$SCRIPT_DIR/backup.sh"
 	"$SCRIPT_DIR/std_reencode.sh"
+	"$SCRIPT_DIR/video_split.sh"
 	"$SCRIPT_DIR/channel_layout_id.sh"
 	"$SCRIPT_DIR/extract_mono_stereo.sh"
 	"$SCRIPT_DIR/split_multichannel.sh"

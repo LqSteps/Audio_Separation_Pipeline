@@ -103,6 +103,7 @@ docker-compose down
 [start_pipeline.sh](scripts/start_pipeline.sh) executa os módulos na ordem apresentada. Porém, como dito anteriormente, uma das vantagens deste projeto é modularização completa, cada módulo pode ser executado independentemente.
 
 1. Reencode Padronizado e Downscale
+    - Vídeos com mais de 2h30m são divididos em partes ("PARTE 1", "PARTE 2"...) pelo [video_split.sh](scripts/video_split.sh), para o Demucs não estourar a memória.
 
 2. Identificação e Organização por Layout de Áudio
 3. Extração de Áudio - Mono & Stereo

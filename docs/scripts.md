@@ -11,6 +11,14 @@ Padroniza vídeos de entrada para H264 480p, usando o codec adaptativo do ambien
 - **Saída:** Apenas arquivos compatíveis são mantidos, originais removidos se sucesso. Log detalhado no `std_reencode.log`.
 - **Erros:** Arquivos problemáticos são renomeados como `.corrupted` e removidos da fila.
 
+### 1.1 [video_split.sh](../scripts/video_split.sh)
+Divide vídeos longos em partes, porque o Demucs guarda o áudio inteiro na RAM e estoura com filmes de ~3h (Avatar 3h17 estourou, Alita 2h02 passou).
+- **Entrada:** Vídeos reencodados (`*_480p.mp4`) em `tmp/Filmes_Entrada`.
+- **Processo:** Vídeos acima de `LIMITE_DURACAO` (padrão 9000s = 2h30m) são cortados com `ffmpeg -c copy` em partes iguais de no máximo `TAMANHO_PARTE` (padrão 3600s = 1h): `Filme X ingles_480p.mp4` vira `Filme X ingles PARTE 1_480p.mp4`, `PARTE 2`... Cada parte segue o pipeline como um vídeo comum, em qualquer layout.
+- **Saída:** O original só é apagado depois que todas as partes estão no lugar, e a fila troca o original pelas partes. Log em `video_split.log`.
+- **Erros:** Se a divisão falhar, o vídeo segue inteiro e o erro vai para o log.
+- **Teste:** `LIMITE_DURACAO=1000 TAMANHO_PARTE=600 ./video_split.sh` muda os limites só naquela execução.
+
 ### 2. [channel_layout_id.sh](../scripts/channel_layout_id.sh)
 Identifica e separa vídeos conforme layout de canais de áudio.
 - **Entrada:** Vídeos padronizados (`*_480p.mp4`) em `$INPUT_DIR`.
