@@ -3,12 +3,12 @@
 readonly ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 source "$ROOT_DIR/libs/color_output.sh"
+source "$ROOT_DIR/libs/pathing.sh"
 
 time=120
 
 echo -e "${Bold}[SISTEMA] Iniciando pipeline de extração de dublagens...${ResetColor}"
 while true; do
-	source "$ROOT_DIR/libs/pathing.sh"
 	"$SCRIPT_DIR/backup.sh"
 	"$SCRIPT_DIR/std_reencode.sh"
 	"$SCRIPT_DIR/video_split.sh"
@@ -18,8 +18,8 @@ while true; do
 	"$SCRIPT_DIR/demucs_split.sh"
 	"$SCRIPT_DIR/transfer_files.sh"
 	"$SCRIPT_DIR/transfer_logs.sh"
-	# O glob fica fora das aspas, senão o rm procura um arquivo chamado "*" e o backup nunca é apagado.
-	rm -rf "$ROOT_DIR/tmp/backup/"*
+	rm -rf "$ROOT_DIR/tmp/backup/"
+	"$SCRIPT_DIR/rm_cache.sh"
 	sleep 120
 	sleep "$time"
 

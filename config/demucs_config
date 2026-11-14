@@ -11,9 +11,11 @@ if [ $(hostname) == "Ubuntu-2404-noble-amd64-base" ]; then
 	MODEL="mdx_extra"
 	SEGMENT="270"
 	SHIFTS="20"
+	DIRREF="mdx_extra"
 else
         echo -e "[INFO] Pipeline rodando localmente, utilizando modelo: ${BoldIntenseGreen}htdemucs...${ResetColor}"
         MODEL="htdemucs"
 	SEGMENT="7"
 	SHIFTS="1"
+	DIRREF="htdemucs"
 fi	
