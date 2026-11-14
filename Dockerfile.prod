@@ -17,8 +17,8 @@ COPY . .
 
 RUN python3 -m venv .venv && \
     .venv/bin/pip install -U pip setuptools wheel && \
-    .venv/bin/pip install torch torchaudio --index-url https://download.pytorch.org/whl/cu121 && \
-    .venv/bin/pip install -U demucs && \
-    .venv/bin/pip install soundfile
+    .venv/bin/pip install torch==2.5.1 torchaudio==2.5.1 --index-url https://download.pytorch.org/whl/cu121 && \
+    .venv/bin/pip install demucs==4.1.0 && \
+    .venv/bin/pip install soundfile==0.14.0
 
 ENTRYPOINT ["bash", "scripts/start_pipeline.sh"]

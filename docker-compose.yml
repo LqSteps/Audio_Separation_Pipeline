@@ -7,8 +7,11 @@ services:
     environment:
       - NVIDIA_VISIBLE_DEVICES=all
     volumes:
-      - /root/Audio_Separation_Pipeline/Media/Filmes_Entrada:/app/Media/Filmes_Entrada
-      - /root/Audio_Separation_Pipeline/Media/Filmes_Saida:/app/Media/Filmes_Saida
+      # Media inteira com "rslave": Filmes_Entrada é um mount rclone (rclone-filmes.service) e,
+      # quando ele reinicia, o remount só aparece no container se vier do diretório pai.
+      # Montar Filmes_Entrada direto deixava o container preso no mount antigo
+      # ("Transport endpoint is not connected") até reiniciar o container.
+      - /root/Audio_Separation_Pipeline/Media:/app/Media:rslave
       - /root/Audio_Separation_Pipeline/logs:/app/logs
       - /root/Audio_Separation_Pipeline/tmp:/app/tmp
       - /root/.ssh:/root/.ssh:ro

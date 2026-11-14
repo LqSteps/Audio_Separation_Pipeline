@@ -5,3 +5,5 @@ run_info/
 services/
 .venv/
 show_scripts.sh
+tmp/
+logs/

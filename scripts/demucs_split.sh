@@ -42,8 +42,18 @@ processar: (){
 			remove_from_queue "${i%.*}.mp4"
 		fi
 
+		stems_dir="$(dirname "${i}")/Stems/$MODEL/$(basename "${i%.*}")"
+
+		# A lista é montada no início e a etapa leva dias, então o arquivo pode ter sido apagado
+		# no meio do caminho. O Demucs sai com status 0 quando o arquivo não existe, e sem esta
+		# checagem ele ia para o log como "Status OK" em 3 segundos sem gerar stem nenhum.
+		if [ ! -f "$i" ]; then
+			echo -e "${BoldIntenseYellow}[AVISO] $i não existe mais, pulado.${ResetColor}"
+			continue
+		fi
+
 		# Checa se pasta de saída já existe, se sim, pula, se não, processa.
-		if [ -d "$(dirname "${i}")/Stems/$MODEL/$(basename "${i%.*}")" ]; then
+		if [ -d "$stems_dir" ]; then
 
 			#echo -e "${BoldIntenseYellow}$i já processado${ResetColor}"
 			continue
@@ -62,10 +72,11 @@ processar: (){
                         total=$((SHIFTS * 4))
                         if PYTHONWARNINGS="ignore" "$DEMUCS" -n "$MODEL" --overlap 0.1 \
                         --shifts "$SHIFTS" --segment "$SEGMENT" -o \
-			"$(dirname "${i}")/Stems" "$i" >/dev/null  2> >(counter=1; prev=""; while IFS= read -r -d $'\r' line; do [[ "$prev" == *"100%"* && "$line" != *"100%"* ]] && ((counter++)); echo -e "${BoldIntenseGreen}$counter/$total${ResetColor}|$line" > "$current_progress"; prev="$line"; done) ; then
+			"$(dirname "${i}")/Stems" "$i" >/dev/null  2> >(counter=1; prev=""; while IFS= read -r -d $'\r' line; do [[ "$prev" == *"100%"* && "$line" != *"100%"* ]] && ((counter++)); echo -e "${BoldIntenseGreen}$counter/$total${ResetColor}|$line" > "$current_progress"; prev="$line"; done) \
+			&& [ -s "$stems_dir/vocals.wav" ]; then
 				echo -e "${BoldIntenseGreen}[SUCESSO] $i processado com sucesso.${ResetColor}"
 				# Resultado OK > Entrada com Status OK no log.
-				log_ok "$i" "$(dirname "${i}")/Stems/$MODEL/$(basename "${i%.*}")" "demucs_split.log"
+				log_ok "$i" "$stems_dir" "demucs_split.log"
 
 			else
 				echo -e "${BoldIntenseRed}[ERRO] $i falhou, realocado para o diretório $(dirname "${i}")/Falhas_Demucs${ResetColor}"

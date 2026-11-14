@@ -18,7 +18,8 @@ while true; do
 	"$SCRIPT_DIR/demucs_split.sh"
 	"$SCRIPT_DIR/transfer_files.sh"
 	"$SCRIPT_DIR/transfer_logs.sh"
-	rm -rf "$ROOT_DIR/tmp/backup/*"
+	# O glob fica fora das aspas, senão o rm procura um arquivo chamado "*" e o backup nunca é apagado.
+	rm -rf "$ROOT_DIR/tmp/backup/"*
 	sleep 120
 	sleep "$time"
 
