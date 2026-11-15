@@ -13,12 +13,16 @@ COPY bin/ffprobe /usr/local/bin/ffprobe
 RUN chmod +x /usr/local/bin/ffmpeg /usr/local/bin/ffprobe
 
 WORKDIR /app
-COPY . .
 
+# A venv vem antes do "COPY . .": o Docker reaproveita as camadas de cima para baixo até a primeira que
+# mudou e refaz todas as seguintes. Com o COPY antes, qualquer mudança num script reinstalava o torch
+# (camada de 7 GB a cada build, que lotou o disco). O .venv está no .dockerignore, o COPY não a sobrescreve.
 RUN python3 -m venv .venv && \
     .venv/bin/pip install -U pip setuptools wheel && \
     .venv/bin/pip install torch==2.5.1 torchaudio==2.5.1 --index-url https://download.pytorch.org/whl/cu121 && \
     .venv/bin/pip install demucs==4.1.0 && \
     .venv/bin/pip install soundfile==0.14.0
+
+COPY . .
 
 ENTRYPOINT ["bash", "scripts/start_pipeline.sh"]
