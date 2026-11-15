@@ -28,7 +28,11 @@ pan_expr() {
   echo "$expr"
 }
 
-OUTPUT_DIR="/root/Audio_Separation_Pipeline/Filmes_Entrada/testing"
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+# Fora de Media/Filmes_Entrada, que no servidor é o Drive de produção: a pipeline processaria os vídeos de
+# teste. Para testar a pipeline com eles, copie para a pasta de entrada à mão.
+OUTPUT_DIR="$ROOT_DIR/tmp/Videos_Teste"
 mkdir -p "$OUTPUT_DIR"
 
 for ((i=1; i<=COUNT; i++)); do
@@ -36,7 +40,7 @@ for ((i=1; i<=COUNT; i++)); do
   DURATION=$((RANDOM % 600 + 600))
   FREQ=$((RANDOM % 800 + 200))
 
-  OUTPUT="/root/Audio_Separation_Pipeline/Media/Filmes_Entrada/testing/placeholder_test${i}_${LAYOUT}.mp4"
+  OUTPUT="$OUTPUT_DIR/placeholder_test${i}_${LAYOUT}.mp4"
 
   PAN=$(pan_expr "$LAYOUT")
 
