@@ -38,8 +38,6 @@ fi
 
 shopt -s nullglob 
 
-MaxAge="$1"
-
 readonly ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 source "$ROOT_DIR/libs/pathing.sh"
 source "$ROOT_DIR/libs/quick_log.sh"
@@ -47,16 +45,17 @@ source "$ROOT_DIR/libs/color_output.sh"
 
 Path="$ROOT_DIR/Media"
 
+# Filmes_Entrada é o mount do Google Drive (rclone). O -prune impede o find de entrar nela, igual ao dos
+# arquivos ocultos, então nada do Drive é apagado. O tmp/ fica fora de $Path e não precisa ser excluído.
 mapfile -d "" files < <(
 
 	find "$Path" \
 	\( -name '.*' -prune \) -o \
+	\( -path "$ROOT_DIR/Media/Filmes_Entrada" -prune \) -o \
 	\( -mtime +$MaxAge \( -name '*.mp4' \
 	-o -name '*.mp3' -o -name "*.wav" \
 	-o -name '*.aac' \
 	-o -name '*.ts' \) \) \
-	\( ! -path "$ROOT_DIR/Media/Filmes_Entrada" \
-	-o ! -path "$ROOT_DIR/tmp" \) \
 	-print0
 )
 
