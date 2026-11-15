@@ -47,19 +47,25 @@ processar_channel3 (){
 
                         # Após mapeamento, os canais são padronizados para pcm float em .wav e enviados para
                         # "Nome da pasta do arquivo de input/Canais_Separados/nome do arquivo de entrada sem extensão/FL.wav etc"
-                        mkdir -p "$split_path"
+                        # Os canais saem primeiro em "<pasta>.parcial", que só ganha o nome final quando o ffmpeg termina.
+                        # Antes, uma pasta pela metade (erro do ffmpeg ou container reiniciado no meio) contava como pronta
+                        # no teste acima, e o demucs_split.sh processava o FC.wav incompleto.
+                        rm -rf "$split_path.parcial"
+                        mkdir -p "$split_path.parcial"
                         if ffmpeg -hide_banner -vn -i "$i" \
                         -filter_complex "[0:a]pan=1c|c0=c0[FL];[0:a]pan=1c|c0=c1[FR];[0:a]pan=1c|c0=c2[FC]" \
-                        -map "[FL]"  -c:a pcm_f32le "$split_path/FL.wav" \
-                        -map "[FR]"  -c:a pcm_f32le "$split_path/FR.wav" \
-                        -map "[FC]"  -c:a pcm_f32le "$split_path/FC.wav"; then
+                        -map "[FL]"  -c:a pcm_f32le "$split_path.parcial/FL.wav" \
+                        -map "[FR]"  -c:a pcm_f32le "$split_path.parcial/FR.wav" \
+                        -map "[FC]"  -c:a pcm_f32le "$split_path.parcial/FC.wav"; then
 
                                 # Processamento OK - Registro no log com status OK.
+                                mv "$split_path.parcial" "$split_path"
                                 log_ok "$i" "$split_path" "extrair_3canais.log"
 				echo -e "${IntenseBoldGreen}[SUCESSO] $i convertido para WAV.${ResetColor}"
                         else
                                 # Processamento ERRO - Registro no log com status ERRO.
                                 log_erro "$i" "$split_path" "extrair_3canais.log"
+                                rm -rf "$split_path.parcial"
                                 remove_from_queue "$i"
                                 # Adiciona extensão .corrupted ao arquivo, para inspeção posterior e evitar reprocessamento.
                                 mv "$i" "$i.corrupted"
@@ -88,21 +94,25 @@ processar_5_1_layouts (){
 			continue
 
                 else
-                        mkdir -p "$split_path"
+                        # Pasta ".parcial", mesma lógica do processar_channel3.
+                        rm -rf "$split_path.parcial"
+                        mkdir -p "$split_path.parcial"
                         if ffmpeg -hide_banner -loglevel -8 -vn -i "$i" \
                         -filter_complex "[0:a]pan=1c|c0=c0[FL];[0:a]pan=1c|c0=c1[FR];[0:a]pan=1c|c0=c2[FC];[0:a]pan=1c|c0=c3[LFE];[0:a]pan=1c|c0=c4[SL];[0:a]pan=1c|c0=c5[SR]" \
-                        -map "[FL]"  -c:a pcm_f32le "$split_path/FL.wav" \
-                        -map "[FR]"  -c:a pcm_f32le "$split_path/FR.wav" \
-                        -map "[FC]"  -c:a pcm_f32le "$split_path/FC.wav" \
-                        -map "[LFE]" -c:a pcm_f32le "$split_path/LFE.wav" \
-                        -map "[SL]"  -c:a pcm_f32le "$split_path/SL.wav" \
-                        -map "[SR]"  -c:a pcm_f32le "$split_path/SR.wav"; then
+                        -map "[FL]"  -c:a pcm_f32le "$split_path.parcial/FL.wav" \
+                        -map "[FR]"  -c:a pcm_f32le "$split_path.parcial/FR.wav" \
+                        -map "[FC]"  -c:a pcm_f32le "$split_path.parcial/FC.wav" \
+                        -map "[LFE]" -c:a pcm_f32le "$split_path.parcial/LFE.wav" \
+                        -map "[SL]"  -c:a pcm_f32le "$split_path.parcial/SL.wav" \
+                        -map "[SR]"  -c:a pcm_f32le "$split_path.parcial/SR.wav"; then
 
+                                mv "$split_path.parcial" "$split_path"
                                 log_ok "$i" "$split_path" "extrair_6_canais.log"
 				echo -e "${BoldIntenseGreen}[SUCESSO] $i convertido para WAV.${ResetColor}"
 
                         else
                                 log_erro "$i" "$split_path" "extrair_6_canais.log"
+                                rm -rf "$split_path.parcial"
                                 mv "$i" "$i.corrupted"
 				echo -e "${BoldIntenseRed}[ERRO] $i corrompido.${ResetColor}"
 

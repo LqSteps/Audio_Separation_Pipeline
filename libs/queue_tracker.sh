@@ -44,6 +44,7 @@ requeue_pending() {
         \( -path "*/mono/*.wav" -o -path "*/stereo/*.wav" -o -name "FC.wav" \) \
         -not -path "*/Stems/*" \
         -not -path "*/Falhas_Demucs/*" \
+        -not -path "*.parcial/*" \
         -print0
     )
 

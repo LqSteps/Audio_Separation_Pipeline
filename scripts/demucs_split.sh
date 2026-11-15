@@ -21,13 +21,15 @@ echo -e "\n${Bold}[SISTEMA] EXECUÇÃO: SEPARAÇÃO DE TRILHAS SONORAS${ResetCol
 # O argumento 1 indica qual layout de canais o script  busca, o 2 indica qual faixa será processada, referente a layouts de 6 canais ou mais.
 processar: (){
 
-	# Array que contém todos arquivos .wav fora os resultados do demucs.
+	# Array que contém todos arquivos .wav fora os resultados do demucs, as falhas e as pastas ".parcial"
+	# que o split_multichannel.sh ainda está gerando.
 	mapfile -d "" files < <(
 		find "$OUTPUT_DIR/$1" \
 		-type f \
 		-iname "*$2.wav" \
 		-not -path "*/Stems/*" \
 		-not -path "*/Falhas_Demucs/*" \
+		-not -path "*.parcial/*" \
 		-print0
 	)
 	

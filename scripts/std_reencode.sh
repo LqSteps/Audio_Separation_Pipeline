@@ -46,28 +46,36 @@ main (){
 
                 mkdir -p "$(dirname "$input")"
 		#echo "[DEBUG] file: $i"
-		if ! rclone --config /dev/null moveto "$i" "$input"; then
+		# copyto, e não moveto: o original só sai do Drive depois do reencode (rm -f "$i" mais abaixo). Com o
+		# moveto, um container reiniciado no meio do ffmpeg deixava o original só no tmp, fora da lista do
+		# próximo ciclo, que só olha o Drive.
+		if ! rclone --config /dev/null copyto "$i" "$input"; then
 			# Continua no Drive e entra no próximo ciclo; a cópia pela metade não pode ficar no tmp.
-			[ -e "$i" ] && rm -f "$input"
+			rm -f "$input"
 			echo -e "${BoldIntenseYellow}[AVISO] $i não pôde ser copiado do Drive, fica para o próximo ciclo.${ResetColor}"
 			continue
 		fi
 		#exit 0
 
-                if ffmpeg -loglevel -8 -i "$input" -c:v "$FFMPEG_CODEC" \
+		# Grava em "<nome>_480p.mp4.parcial" e só renomeia quando o ffmpeg termina: um vídeo pela metade não
+		# segue na pipeline. "-f mp4" porque a extensão ".parcial" não diz o formato; "-y" sobrescreve a sobra.
+                if ffmpeg -y -loglevel -8 -i "$input" -c:v "$FFMPEG_CODEC" \
                         -s 720x480 \
-                        -c:a copy "$output" \
+                        -c:a copy -f mp4 "$output.parcial" \
                         -hide_banner; then
+                        mv "$output.parcial" "$output"
                         log_ok "$input" "$output" "std_reencode.log"
                         echo "$output" >> "$queue"
 			echo -e "${BoldIntenseGreen}[SUCESSO] $input downscaled para 480p, salvo em $output.${ResetColor}"
                         rm "$input"
+                        rm -f "$i" # Só agora o original sai do Drive.
                 else
                         log_erro "$input" "$input.corrupted" "std_reencode.log"
                         remove_from_queue "$i"
-                        rm -f "$output"
+                        rm -f "$output.parcial"
 			echo -e "${BoldIntenseRed}[ERRO] $input corrompido, não foi processado.${ResetColor}"
                         mv "$input" "$input.corrupted"
+                        rm -f "$i" # Sai do Drive como antes; a cópia .corrupted fica no tmp para inspeção.
                 fi
         done
 

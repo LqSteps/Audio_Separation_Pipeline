@@ -31,12 +31,17 @@ processar (){
 		continue
 		fi
 	
+		# O ffmpeg grava em "<nome>.wav.parcial" e o arquivo só ganha o nome final quando termina. Antes, um .wav
+		# pela metade (container reiniciado no meio) já existia e o teste acima pulava, mandando áudio cortado ao
+		# Demucs. O "-f wav" diz o formato, que o ffmpeg não adivinha pela extensão ".parcial", e o "-y" sobrescreve
+		# a sobra de uma tentativa interrompida.
 		if ffmpeg -loglevel -8 -vn -v error \
 		-i "$i" \
 		-hide_banner \
 		-c:a pcm_f32le \
-		"${i%.*}.wav"; then
+		-y -f wav "${i%.*}.wav.parcial"; then
 
+			mv "${i%.*}.wav.parcial" "${i%.*}.wav"
 			# Processamento funcionou, registrado no log.
 			echo -e "${BoldIntenseGreen}[SUCESSO] $(basename "$i") Convertido para WAV${ResetColor}."
 			log_ok "$i" "${i%.*}.wav" "$1_wav.log"
@@ -44,6 +49,7 @@ processar (){
 			# Processamento falhou, registrado no log e arquivo recebe a extensão .corrupted, 
 			# para evitar reprocessamento e indicar estrutura problemática.
 			mv "$i" "${i%.*}.corrupted"
+			rm -f "${i%.*}.wav.parcial"
 			echo "${BoldIntenseRed}[ERRO] $(basename "$i") corrompido.${ResetColor}"
 			log_erro "$i" "${i%.*}.corrupted" "$1_wav.log"
 			remove_from_queue "$i"
