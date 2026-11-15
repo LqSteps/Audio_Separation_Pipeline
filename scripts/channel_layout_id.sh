@@ -20,7 +20,7 @@ count_files () {
         echo -e "${IntenseCyan}[INFO] Arquivos com 3 Canais: $channel_3${ResetColor}"
         echo -e "${IntenseCyan}[INFO] Arquivos com 2 Canais: $channel_2${ResetColor}"
         echo -e "${IntenseCyan}[INFO] Arquivos com 1 Canal: $channel_1${ResetColor}"
-	echo -e "${IntenseCyan}[INFO] Arquivos Com Layout Não Específicado: $unknow_channels\n${ResetColor}"
+	echo -e "${IntenseCyan}[INFO] Arquivos Com Layout Não Específicado: $unknown_channels\n${ResetColor}"
 }
 
 # Função responsável por realocar arquivos de áudio para diretórios com nome do layout + subdiretório com mesmo nome do de entrada que contém as dublagens.
@@ -31,7 +31,7 @@ main (){
 	channel_3=0
 	channel_2=0
 	channel_1=0
-	unknow_channels=0
+	unknown_channels=0
 
 	
 	mapfile -d "" files < <(
@@ -84,6 +84,18 @@ main (){
 			"5.1(side)") (( channel_6 ++ ));;
 			8_channels) (( channel_8 ++ ));;
 			*) (( unknown_channels ++ ));;
+		esac
+
+		# 3.0, 7.1 e outros layouts não têm suporte (precisariam de outra arquitetura): o demucs_split.sh só
+		# processa os layouts da primeira linha abaixo. O vídeo continua indo para Filmes_Saida/<layout>, mas sai
+		# da fila e ganha uma linha de ERRO no log, para aparecer no Hub em vez de ficar parado sem aviso.
+		case "$format_2" in
+			mono|stereo|5.1|"5.1(side)"|6_channels) ;; #Com suporte, nada a fazer.
+			*)
+				echo -e "${BoldIntenseYellow}[AVISO] Layout $format_2 sem suporte, $i não vai para o Demucs.${ResetColor}\n"
+				log_erro "$i" "$OUTPUT_DIR/$format_2/${clean_input#*/}" "channel_id.log"
+				remove_from_queue "$i"
+				;;
 		esac
 	
 	done

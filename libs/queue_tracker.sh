@@ -39,12 +39,14 @@ requeue_pending() {
     local pendentes i pasta nome
 
     # Os mesmos arquivos que o demucs_split.sh processa: .wav de mono/estéreo e FC.wav dos multicanal.
+    # O 3_channels fica de fora: o split_multichannel.sh extrai os canais, mas o Demucs não tem suporte a ele.
     mapfile -d "" pendentes < <(
         find "$OUTPUT_DIR" -type f \
         \( -path "*/mono/*.wav" -o -path "*/stereo/*.wav" -o -name "FC.wav" \) \
         -not -path "*/Stems/*" \
         -not -path "*/Falhas_Demucs/*" \
         -not -path "*.parcial/*" \
+        -not -path "*/3_channels/*" \
         -print0
     )
 
