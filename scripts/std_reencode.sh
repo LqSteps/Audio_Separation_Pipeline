@@ -10,6 +10,7 @@ source "$ROOT_DIR/libs/queue_tracker.sh"
 source "$ROOT_DIR/libs/color_output.sh"
 # Consultar documentação na seção "config".
 source "$ROOT_DIR/config/ffmpeg_config"
+source "$ROOT_DIR/config/demucs_config"
 
 echo -e "\n${Bold}[SISTEMA] EXECUÇÃO: DOWNSCALE E REENCODE DOS VÍDEOS${ResetColor}\n"
 
@@ -25,6 +26,7 @@ queue="$BASE_DIR/tmp/file_queue.txt"
 touch "$queue"
 : > "$queue"
 echo "Fila:" >> "$queue"
+requeue_pending # Dublagens de ciclos anteriores que ainda esperam o Demucs (ver libs/queue_tracker.sh).
 
 # Função principal responsável por padronizar arquivos de entrada em h264 e 480p.
 main (){

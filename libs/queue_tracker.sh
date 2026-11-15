@@ -30,3 +30,40 @@ replace_in_queue() {
         "$BASE_DIR/tmp/file_queue.tmp" \
         "$queue"
 }
+
+# Devolve à fila as dublagens que já foram extraídas e ainda esperam o Demucs. Usado pelo std_reencode.sh,
+# que zera a fila no início de cada ciclo: se o container reinicia no meio do Demucs, a fila ficava só
+# com os vídeos novos, apesar de o Demucs ainda ir processar as outras.
+# Precisa do $DIRREF (config/demucs_config) para saber se a dublagem já tem stems.
+requeue_pending() {
+    local pendentes i pasta nome
+
+    # Os mesmos arquivos que o demucs_split.sh processa: .wav de mono/estéreo e FC.wav dos multicanal.
+    mapfile -d "" pendentes < <(
+        find "$OUTPUT_DIR" -type f \
+        \( -path "*/mono/*.wav" -o -path "*/stereo/*.wav" -o -name "FC.wav" \) \
+        -not -path "*/Stems/*" \
+        -not -path "*/Falhas_Demucs/*" \
+        -print0
+    )
+
+    for i in "${pendentes[@]}"; do
+
+        pasta="$(dirname "$i")"
+        nome="$(basename "${i%.*}")"
+
+        # Já tem stems: o Demucs terminou essa dublagem.
+        if [ -d "$pasta/Stems/$DIRREF/$nome" ]; then
+            continue
+        fi
+
+        # Multicanal: .../<FILME>/Canais_Separados/<dublagem>/FC.wav, e o vídeo é .../<FILME>/<dublagem>.mp4
+        # Mono/estéreo: .../<FILME>/<dublagem>.wav, com o vídeo na mesma pasta.
+        if [ "$nome" == "FC" ]; then
+            echo "$(dirname "$(dirname "$pasta")")/$(basename "$pasta").mp4" >> "$BASE_DIR/tmp/file_queue.txt"
+        else
+            echo "$pasta/$nome.mp4" >> "$BASE_DIR/tmp/file_queue.txt"
+        fi
+
+    done
+}

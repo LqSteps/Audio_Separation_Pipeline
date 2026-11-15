@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 #Descrição: Remove arquivos utilizados pela pipeline que já foram processados e enviados ao servidor 1.
-#O start_pipeline.sh só chama este script quando o transfer_files.sh terminou sem erro.
 
 readonly ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
@@ -17,70 +16,73 @@ echo -e "\n${Bold}[SISTEMA] EXECUÇÃO: LIMPEZA DE CACHE${ResetColor}\n"
 
 main (){
 
-	pgrep demucs > /dev/null #Checa se existe algum processo de separação corrente.
-
-	if [[ "$?" == 0 ]]; then #Apenas apaga arquivos se nada está sendo separado.
-
-		printf "${BoldIntenseYellow}[AVISO]${ResetColor} Demucs em execução, cache permanece no sistema...\n"
-		exit 1
-
-	fi
-
-	# Último status de cada arquivo nas últimas 80 linhas do log. Uma dublagem que deu OK, foi reenviada
-	# e agora falhou não é apagada: o arquivo dela está em Falhas_Demucs para inspeção.
-	declare -A status
-	local linha_log='Status (OK|ERRO) - Entrada: (.*) - Saída: '
-
 	while read -r line; do #Lê últimas 80 linhas do log, uma por vez.
 
-		[[ "$line" =~ $linha_log ]] && status["${BASH_REMATCH[2]}"]="${BASH_REMATCH[1]}"
+		grep -q "Canais_Separados" <<< "$line" #Checa se a dublagem é multicanal (5.1, 6 canais).
 
-	done < <(tail -80 "$LOG_DIR/demucs_split.log")
+		if [[ $? == 0 ]]; then #Multicanal: o nome do file + dublagem é a pasta logo depois de "Canais_Separados/".
 
-	for entrada in "${!status[@]}"; do
+			file_name="$(grep -o "Canais_Separados/[^/]*" <<< "$line" | head -1 | cut -d "/" -f 2)"
 
-		[[ "${status[$entrada]}" == "OK" ]] || continue #Processa apenas arquivos que passaram com êxito pelo Demucs.
+		else #Mono/estéreo: o nome do file + dublagem é o último pedaço da linha (Saída: .../Stems/mdx_extra/<dublagem>).
 
-		# Caminho a partir de Filmes_Saida: "<layout>/<PASTA DO FILME>/...". O log grava os caminhos do
-		# container (/app/...), então a pasta do filme é montada com o $OUTPUT_DIR deste ambiente.
-		relativo="${entrada#*/Filmes_Saida/}"
-		[[ "$relativo" != "$entrada" ]] || continue
-		pasta_filme="$OUTPUT_DIR/$(cut -d "/" -f 1-2 <<< "$relativo")"
+			file_name="$(basename "$line")"
 
-		# Nome da dublagem. Nos layouts multicanal o arquivo é sempre FC.wav e o nome é o da pasta em
-		# Canais_Separados; em mono/estéreo é o próprio .wav (antes o campo 8 do log saía "app").
-		if [[ "$(basename "$entrada")" == "FC.wav" ]]; then
-			dublagem="$(basename "$(dirname "$entrada")")"
-		else
-			dublagem="$(basename "${entrada%.*}")"
 		fi
 
-		[[ -n "$dublagem" && -d "$pasta_filme" ]] || continue
+		if [[ -z "$file_name" ]]; then #Sem nome, o find abaixo pegaria tudo. Pula a linha.
 
-		# Escapa [ ] * ? para o nome ser comparado literalmente pelo find.
-		nome="$(sed 's/[][*?\\]/\\&/g' <<< "$dublagem")"
+			continue
 
-		mapfile -d "" dirs < <( #Só o que tem exatamente o nome da dublagem, dentro da pasta do filme: vídeo 480p, .wav, pasta em Canais_Separados e pasta dos stems.
+		fi
 
-			find \
-			"$pasta_filme" \
-			\( -name "$nome" -o -name "$nome.mp4" -o -name "$nome.wav" \) \
-			-prune \
-			-print0
+		grep -q "Status OK" <<< "$line" #Checa se o arquivo passou integralmente com êxito pela pipeline.
 
-		)
+		
+		if [[ $? == 0 ]]; then #Processa apenas arquivos de acordo com o passo acima.
 
-		for i in "${dirs[@]}"; do
+			#printf "${Purple}[DEBUG]i${ColorReset} - Sucesso\n"
 
-			printf "${BoldIntenseCyan}[INFO]${ResetColor} Cache apagado: %s\n" "$i"
+			mapfile -d "" dirs < <( #Busca no diretório de saída correspondências com "nome do filme + dublagem" e coloca os resultados no array "dirs".
 
-			rm -rf "$i" #Apaga tudo contido em cada item do array "dirs".
+				find \
+				"$OUTPUT_DIR" \
+				-iname "$file_name*" \
+				-print0
+				
+			) #Vim marca este parenteses como erro, acredito ser um falso positivo.
 
-			log_ok "$i" "DELETADO" "deleted_files.log" #Aparece no Hub como "Remoção".
+			pgrep demucs > /dev/null #Checa se existe algum processo de separação corrente.
 
-		done
+			if [[ "$?" != 0 ]]; then #Apenas apaga arquivos se nada está sendo separado.
+			
+				for i in "${dirs[@]}"; do 
 
-	done
+					printf "\n${Purple}[DEBUG]${ResetColor} - Cache: %s\n" "$i"
+
+					rm -rf "$i" #Apaga tudo contido em cada item do array "dirs".
+
+					log_ok "$i" "DELETADO" "deleted_files.log" #Registra no log, aparece no Hub como "Remoção".
+					
+					#if [[ -d "$i" ]]; then #Condicional para debug, apenas lista exatamente todos arquivos que seriam excluídos."
+
+					#	ls "$i" 
+					#	ls "$i/Stems/$DIRREF/FC"
+
+					#fi
+
+				done
+
+			else
+
+				printf "${BoldIntenseYellow}[AVISO]${ResetColor} Demucs em execução, cache permanece no sistema...\n"
+				exit 1
+
+			fi
+
+		fi
+
+	done < <(tail -80 "$LOG_DIR/demucs_split.log")
 
 	echo -e "\n${Bold}[SISTEMA] FINALIZADO/FILA VAZIA.${ResetColor}\n"
 
