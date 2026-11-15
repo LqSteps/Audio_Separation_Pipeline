@@ -20,9 +20,9 @@ while true; do
 	transferencia=$?
 	"$SCRIPT_DIR/transfer_logs.sh"
 	rm -rf "$ROOT_DIR/tmp/backup/"
-	# Só apaga o cache quando o envio ao servidor 1 deu certo.
+	# Só apaga os arquivos enviados quando o envio ao servidor 1 deu certo.
 	if [[ "$transferencia" == 0 ]]; then
-		"$SCRIPT_DIR/rm_cache.sh"
+		"$SCRIPT_DIR/clean_output.sh"
 	fi
 	sleep 120
 	sleep "$time"

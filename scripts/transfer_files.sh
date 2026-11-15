@@ -18,7 +18,7 @@ rsync -rv --checksum "$OUTPUT_DIR" -e "ssh -p 31754" "$SSH_AGENT:/mnt/16tb/Audio
 rsync -rv --checksum "$LOG_DIR" -e "ssh -p 31754" "$SSH_AGENT:/mnt/16tb/Audio_Separation_Pipeline" || status=1
 
 # O status de saída diz ao start_pipeline.sh se pode rodar a limpeza: com falha no envio, o
-# rm_cache.sh apagaria stems que nunca chegaram ao servidor 1.
+# clean_output.sh apagaria stems que nunca chegaram ao servidor 1.
 if [[ "$status" == 0 ]]; then
 	echo -e "${BoldIntenseGreen} [SUCESSO] Arquivos enviados.${ResetColor}"
 else

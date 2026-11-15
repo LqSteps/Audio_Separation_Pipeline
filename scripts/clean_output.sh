@@ -12,7 +12,7 @@ source "$ROOT_DIR/libs/color_output.sh"
 # Consultar documentação na seção "config"
 source "$CONFIG_DIR/demucs_config"
 
-echo -e "\n${Bold}[SISTEMA] EXECUÇÃO: LIMPEZA DE CACHE${ResetColor}\n"
+echo -e "\n${Bold}[SISTEMA] EXECUÇÃO: LIMPEZA DE ARQUIVOS ENVIADOS${ResetColor}\n"
 
 main (){
 
@@ -60,7 +60,7 @@ main (){
 			
 				for i in "${dirs[@]}"; do 
 
-					printf "\n${Purple}[DEBUG]${ResetColor} - Cache: %s\n" "$i"
+					printf "\n${Purple}[DEBUG]${ResetColor} - Apagando: %s\n" "$i"
 
 					rm -rf "$i" #Apaga tudo contido em cada item do array "dirs".
 
@@ -77,7 +77,7 @@ main (){
 
 			else
 
-				printf "${BoldIntenseYellow}[AVISO]${ResetColor} Demucs em execução, cache permanece no sistema...\n"
+				printf "${BoldIntenseYellow}[AVISO]${ResetColor} Demucs em execução, arquivos permanecem no sistema...\n"
 				exit 1
 
 			fi
