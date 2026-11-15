@@ -33,11 +33,25 @@ main (){
                 relative="${i#"$INPUT_DIR"/}"
                 output="$ROOT_DIR/tmp/Filmes_Entrada/$(dirname "$relative")/$(basename "${i%.*}")_480p.mp4"
 		input="$ROOT_DIR/tmp/Filmes_Entrada/$relative"
+		# A lista é montada no início e a pasta de um filme leva dezenas de minutos no reencode, então
+		# o arquivo pode sair do Drive antes da vez dele (Jumanji turco e ucraniano em 14/11). Sem esta
+		# checagem o rclone falhava, o ffmpeg rodava num arquivo que não existe e a dublagem ia para o
+		# log como "corrompido".
+		if [ ! -e "$i" ]; then
+			echo -e "${BoldIntenseCyan}[INFO] $i saiu da pasta de entrada antes do reencode, ignorado.${ResetColor}"
+			continue
+		fi
+
                 mkdir -p "$(dirname "$input")"
 		#echo "[DEBUG] file: $i"
-		rclone --config /dev/null moveto "$i" "$input"
+		if ! rclone --config /dev/null moveto "$i" "$input"; then
+			# Continua no Drive e entra no próximo ciclo; a cópia pela metade não pode ficar no tmp.
+			[ -e "$i" ] && rm -f "$input"
+			echo -e "${BoldIntenseYellow}[AVISO] $i não pôde ser copiado do Drive, fica para o próximo ciclo.${ResetColor}"
+			continue
+		fi
 		#exit 0
-		
+
                 if ffmpeg -loglevel -8 -i "$input" -c:v "$FFMPEG_CODEC" \
                         -s 720x480 \
                         -c:a copy "$output" \

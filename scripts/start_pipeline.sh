@@ -17,9 +17,13 @@ while true; do
 	"$SCRIPT_DIR/split_multichannel.sh"
 	"$SCRIPT_DIR/demucs_split.sh"
 	"$SCRIPT_DIR/transfer_files.sh"
+	transferencia=$?
 	"$SCRIPT_DIR/transfer_logs.sh"
 	rm -rf "$ROOT_DIR/tmp/backup/"
-	"$SCRIPT_DIR/rm_cache.sh"
+	# Só apaga o cache quando o envio ao servidor 1 deu certo.
+	if [[ "$transferencia" == 0 ]]; then
+		"$SCRIPT_DIR/rm_cache.sh"
+	fi
 	sleep 120
 	sleep "$time"
 
