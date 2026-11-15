@@ -22,15 +22,15 @@ main (){
 
 		if [[ $? == 0 ]]; then
 
-			file_name="$(cut -d "/" -f 8 <<< "$line")" #Multicanal: extrai da linha apenas nome do file + dublagem.
+			file_name="$(cut -d "/" -f 8 <<< "$line")" #Multicanal: .../Canais_Separados/<dublagem>/FC.wav, campo 8 é a pasta da dublagem.
 
 		else
 
-			file_name="$(cut -d "/" -f 15 <<< "$line")" #Mono/estéreo: o caminho é mais curto e o nome fica no fim da linha (Saída: .../Stems/mdx_extra/<dublagem>).
+			file_name="$(cut -d "/" -f 7 <<< "$line" | grep -o ".*_480p")" #Mono/estéreo: .../<FILME>/<dublagem>.wav, o campo 7 vem "<dublagem>_480p.wav - Saída: " e o grep -o fica só com o texto até "_480p".
 
 		fi
 
-		grep -q "_480p$" <<< "$file_name" #Trava: todo nome de dublagem termina em "_480p". Linha com caminho diferente (ex.: /root/... em vez de /app/) daria "Stems" ou "Canais_Separados" e o find apagaria a pasta de todos os filmes.
+		grep -q "_480p$" <<< "$file_name" #Trava: todo nome de dublagem termina em "_480p". Linha com caminho diferente (ex.: /root/... em vez de /app/) daria "Canais_Separados" ou a pasta do filme e o find apagaria muito mais que a dublagem.
 
 		if [[ $? != 0 ]]; then
 
