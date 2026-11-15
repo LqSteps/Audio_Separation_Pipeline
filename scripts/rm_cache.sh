@@ -20,17 +20,19 @@ main (){
 
 		grep -q "Canais_Separados" <<< "$line" #Checa se a dublagem é multicanal (5.1, 6 canais).
 
-		if [[ $? == 0 ]]; then #Multicanal: o nome do file + dublagem é a pasta logo depois de "Canais_Separados/".
+		if [[ $? == 0 ]]; then
 
-			file_name="$(grep -o "Canais_Separados/[^/]*" <<< "$line" | head -1 | cut -d "/" -f 2)"
+			file_name="$(cut -d "/" -f 8 <<< "$line")" #Multicanal: extrai da linha apenas nome do file + dublagem.
 
-		else #Mono/estéreo: o nome do file + dublagem é o último pedaço da linha (Saída: .../Stems/mdx_extra/<dublagem>).
+		else
 
-			file_name="$(basename "$line")"
+			file_name="$(cut -d "/" -f 15 <<< "$line")" #Mono/estéreo: o caminho é mais curto e o nome fica no fim da linha (Saída: .../Stems/mdx_extra/<dublagem>).
 
 		fi
 
-		if [[ -z "$file_name" ]]; then #Sem nome, o find abaixo pegaria tudo. Pula a linha.
+		grep -q "_480p$" <<< "$file_name" #Trava: todo nome de dublagem termina em "_480p". Linha com caminho diferente (ex.: /root/... em vez de /app/) daria "Stems" ou "Canais_Separados" e o find apagaria a pasta de todos os filmes.
+
+		if [[ $? != 0 ]]; then
 
 			continue
 
