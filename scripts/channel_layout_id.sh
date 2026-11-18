@@ -34,10 +34,11 @@ main (){
 	unknown_channels=0
 
 	
+	# Só os vídeos reencodados (inclusive "PARTE N_480p.mp4"), não a cópia full-res que sobra de um reencode interrompido.
 	mapfile -d "" files < <(
 		find "$ROOT_DIR/tmp/Filmes_Entrada" \
 		-type f \
-		-iname "*mp4" \
+		-iname "*_480p.mp4" \
 		-print0
 	)
 
