@@ -66,9 +66,10 @@ main (){
 
 		# Grava em "<nome>_480p.mp4.parcial" e só renomeia quando o ffmpeg termina: um vídeo pela metade não
 		# segue na pipeline. "-f mp4" porque a extensão ".parcial" não diz o formato; "-y" sobrescreve a sobra.
+		# "-strict -2" deixa o mp4 aceitar áudio TrueHD, que sem isso falhava e o vídeo virava "corrompido".
                 if ffmpeg -y -loglevel -8 -i "$input" -c:v "$FFMPEG_CODEC" \
                         -s 720x480 \
-                        -c:a copy -f mp4 "$output.parcial" \
+                        -c:a copy -strict -2 -f mp4 "$output.parcial" \
                         -hide_banner; then
                         mv "$output.parcial" "$output"
                         log_ok "$input" "$output" "std_reencode.log"
