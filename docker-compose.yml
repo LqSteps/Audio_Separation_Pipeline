@@ -16,7 +16,10 @@ services:
       - /root/Audio_Separation_Pipeline/tmp:/app/tmp
       # O Demucs baixa o mdx_extra (640 MB) em /root/.cache/huggingface/hub; sem este volume cada recreate baixava de novo.
       - /root/Audio_Separation_Pipeline/models:/root/.cache/huggingface
-      - /root/.ssh:/root/.ssh:ro
+      # Só o que o envio ao servidor 1 usa (root@157.180.2.67, porta 31754): o config manda o ssh usar a chave "root".
+      - /root/.ssh/config:/root/.ssh/config:ro
+      - /root/.ssh/root:/root/.ssh/root:ro
+      - /root/.ssh/known_hosts:/root/.ssh/known_hosts:ro
     deploy:
       resources:
         reservations:
