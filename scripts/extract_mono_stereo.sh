@@ -30,6 +30,11 @@ processar (){
 			#echo "${i%.*}.wav já existe, pulando..."
 		continue
 		fi
+
+		# O demucs_split.sh move o .wav que falhou para "Falhas_Demucs", na mesma pasta do vídeo.
+		if [ -f "$(dirname "$i")/Falhas_Demucs/$(basename "${i%.*}").wav" ]; then #Já falhou no Demucs, fica para inspeção.
+			continue
+		fi
 	
 		# O ffmpeg grava em "<nome>.wav.parcial" e o arquivo só ganha o nome final quando termina. Antes, um .wav
 		# pela metade (container reiniciado no meio) já existia e o teste acima pulava, mandando áudio cortado ao
