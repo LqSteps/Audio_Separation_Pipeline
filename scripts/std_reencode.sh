@@ -44,6 +44,13 @@ main (){
 			continue
 		fi
 
+		# O reencode grava em tmp/Filmes_Entrada. Disco cheio faria o ffmpeg falhar e o filme virar "corrompido".
+		livre=$(df --output=avail -BG "$BASE_DIR/tmp" | tail -1 | tr -d " G") #Espaço livre em GB.
+		if [ "$livre" -lt 100 ]; then
+			echo -e "${BoldIntenseYellow}[AVISO] Só ${livre}G livres, $i fica para o próximo ciclo.${ResetColor}"
+			continue
+		fi
+
                 mkdir -p "$(dirname "$input")"
 		#echo "[DEBUG] file: $i"
 		# copyto, e não moveto: o original só sai do Drive depois do reencode (rm -f "$i" mais abaixo). Com o

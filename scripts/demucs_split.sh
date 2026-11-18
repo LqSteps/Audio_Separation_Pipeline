@@ -61,6 +61,13 @@ processar: (){
 			continue
 
 		else
+			# Disco cheio faria o Demucs falhar depois de horas e a dublagem iria para Falhas_Demucs.
+			livre=$(df --output=avail -BG "$OUTPUT_DIR" | tail -1 | tr -d " G") #Espaço livre em GB.
+			if [ "$livre" -lt 100 ]; then
+				echo -e "${BoldIntenseYellow}[AVISO] Só ${livre}G livres, $i fica para o próximo ciclo.${ResetColor}"
+				continue
+			fi
+
 			mkdir -p "$BASE_DIR/tmp"
 			touch "$BASE_DIR/tmp/current_file_demucs.txt"
 			touch "$BASE_DIR/tmp/current_progress_demucs.txt"
