@@ -99,6 +99,8 @@ processar: (){
 				mv "$i" "$(dirname "${i}")/Falhas_Demucs"
 
 			fi	
+
+			exit 0 #Uma dublagem por volta: o start_pipeline.sh envia, limpa e começa a próxima volta.
 		fi
 	done
 
