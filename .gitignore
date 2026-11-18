@@ -13,3 +13,4 @@ Falhas_Demucs/
 .venv/
 tmp/
 *.log
+models/

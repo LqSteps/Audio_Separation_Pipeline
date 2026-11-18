@@ -8,3 +8,4 @@ show_scripts.sh
 tmp/
 logs/
 .git/
+models/

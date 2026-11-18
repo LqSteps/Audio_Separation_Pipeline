@@ -14,6 +14,8 @@ services:
       - /root/Audio_Separation_Pipeline/Media:/app/Media:rslave
       - /root/Audio_Separation_Pipeline/logs:/app/logs
       - /root/Audio_Separation_Pipeline/tmp:/app/tmp
+      # O Demucs baixa o mdx_extra (640 MB) em /root/.cache/huggingface/hub; sem este volume cada recreate baixava de novo.
+      - /root/Audio_Separation_Pipeline/models:/root/.cache/huggingface
       - /root/.ssh:/root/.ssh:ro
     deploy:
       resources:
