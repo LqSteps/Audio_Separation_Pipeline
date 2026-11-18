@@ -28,7 +28,7 @@ main (){
 		mv "$i" "${i%.*}.txt"
 	done
 
-	rsync -rv --checksum "$tmp_log_path" -e "ssh -p 31754" \
+	rsync -rv --timeout=600 --checksum "$tmp_log_path" -e "ssh -p 31754 -o ConnectTimeout=30 -o ServerAliveInterval=30 -o ServerAliveCountMax=4" \
 		"$SSH_AGENT:/mnt/16tb/Audio_Separation_Pipeline"
 
 	echo -e "${BoldIntenseCyan}[INFO] Logs atualizados na $1 - \

@@ -16,9 +16,10 @@ echo -e "${BoldIntenseCyan} [INFO] Enviando arquivos à equipe de edição...${R
 # -t guarda a data de modificação no servidor 1, e o rsync compara só tamanho e data. O --checksum lia e calculava
 # o hash de todo o Filmes_Saida nos dois servidores a cada ciclo. O primeiro envio com -t ainda lê tudo uma vez,
 # para gravar as datas. "*.parcial" é arquivo ou pasta que o ffmpeg ainda não terminou (ver extract_mono_stereo.sh).
+# --timeout (rsync) e ConnectTimeout/ServerAlive (ssh) derrubam uma conexão meio aberta, em vez de travar o laço.
 status=0
-rsync -rtv --exclude "*.parcial" "$OUTPUT_DIR" -e "ssh -p 31754" "$SSH_AGENT:/mnt/16tb/Audio_Separation_Pipeline/Media" || status=1
-rsync -rtv "$LOG_DIR" -e "ssh -p 31754" "$SSH_AGENT:/mnt/16tb/Audio_Separation_Pipeline" || status=1
+rsync -rtv --timeout=600 --exclude "*.parcial" "$OUTPUT_DIR" -e "ssh -p 31754 -o ConnectTimeout=30 -o ServerAliveInterval=30 -o ServerAliveCountMax=4" "$SSH_AGENT:/mnt/16tb/Audio_Separation_Pipeline/Media" || status=1
+rsync -rtv --timeout=600 "$LOG_DIR" -e "ssh -p 31754 -o ConnectTimeout=30 -o ServerAliveInterval=30 -o ServerAliveCountMax=4" "$SSH_AGENT:/mnt/16tb/Audio_Separation_Pipeline" || status=1
 
 # O status de saída diz ao start_pipeline.sh se pode rodar a limpeza: com falha no envio, o
 # clean_output.sh apagaria stems que nunca chegaram ao servidor 1.
