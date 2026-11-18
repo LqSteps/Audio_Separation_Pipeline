@@ -54,8 +54,9 @@ processar: (){
 			continue
 		fi
 
-		# Checa se pasta de saída já existe, se sim, pula, se não, processa.
-		if [ -d "$stems_dir" ]; then
+		# Checa se o resultado já existe, se sim, pula, se não, processa. O vocals.wav é o último stem que o
+		# Demucs grava, então uma pasta de stems pela metade (container reiniciado) não conta como pronta.
+		if [ -s "$stems_dir/vocals.wav" ]; then
 
 			#echo -e "${BoldIntenseYellow}$i já processado${ResetColor}"
 			continue
