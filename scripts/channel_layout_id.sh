@@ -11,6 +11,9 @@ source "$ROOT_DIR/libs/quick_log.sh"
 source "$ROOT_DIR/libs/color_output.sh"
 source "$ROOT_DIR/libs/queue_tracker.sh"
 
+# Consultar documentação na seção "config". Só para o $DIRREF, a pasta dos stems (Stems/mdx_extra).
+source "$ROOT_DIR/config/demucs_config"
+
 echo -e "\n${Bold}[SISTEMA] EXECUÇÃO: IDENTIFICAÇÃO DE LAYOUTS DE ÁUDIO${ResetColor}"
 
 # Função responsável por contar múmero de arquivos identificados por canal.
@@ -67,6 +70,18 @@ main (){
 
 		# Cria e move os arquivos para diretórios dos layouts e subdiretório com mesmo nome da pasta do filme que contém as dublagens.
 		mkdir -p "$OUTPUT_DIR/$format_2/${clean_input#*/}" 2>/dev/null
+
+		# Dublagem enviada de novo com o mesmo nome (ex.: falhou no Demucs e foi subida outra vez no Drive): apaga o que
+		# sobrou da tentativa anterior, para ela ser processada do zero. Sem isso a pasta antiga em Canais_Separados fazia
+		# o split_multichannel.sh pular o vídeo novo, e o .wav antigo (ou o de Falhas_Demucs) fazia o extract_mono_stereo.sh
+		# pular, então a dublagem nunca chegava ao Demucs (007 Skyfall inglês, 11/2026).
+		destino="$OUTPUT_DIR/$format_2/${clean_input#*/}"
+		nome="$(basename "${i%.*}")" #Ex.: "007 – skyfall ingles_480p".
+		if [ -e "$destino/Canais_Separados/$nome" ] || [ -e "$destino/$nome.wav" ] || [ -e "$destino/Falhas_Demucs/$nome.wav" ] || [ -e "$destino/Stems/$DIRREF/$nome" ]; then
+			echo -e "${BoldIntenseYellow}[AVISO] $nome já passou pela pipeline antes, o resultado anterior foi apagado para processar de novo.${ResetColor}"
+			rm -rf "$destino/Canais_Separados/$nome" "$destino/$nome.wav" "$destino/Falhas_Demucs/$nome.wav" "$destino/Stems/$DIRREF/$nome"
+		fi
+
 		echo -e "${BoldIntenseCyan}[INFO] Realocado para pasta $OUTPUT_DIR/$format_2/${clean_input#*/}${ResetColor}"
 		mv "$i" "$OUTPUT_DIR/$format_2/${clean_input#*/}"
 

@@ -74,6 +74,7 @@ processar: (){
 			touch "$BASE_DIR/tmp/current_progress_demucs.txt"
 			current_file_log="$BASE_DIR/tmp/current_file_demucs.txt"
 			current_progress="$BASE_DIR/tmp/current_progress_demucs.txt"
+			demucs_saida="$BASE_DIR/tmp/demucs_saida.txt" #Tudo o que o Demucs escreve no stderr, para o log de erros.
 			echo -e "${BoldIntenseCyan}[INFO] Processando $i...${ResetColor}" >"$current_file_log"
 
 			# Checa se o processamento foi executado corretamente.	
@@ -82,14 +83,21 @@ processar: (){
                         total=$((SHIFTS * 4))
                         if PYTHONWARNINGS="ignore" "$DEMUCS" -n "$MODEL" --overlap 0.1 \
                         --shifts "$SHIFTS" --segment "$SEGMENT" -o \
-			"$(dirname "${i}")/Stems" "$i" >/dev/null  2> >(counter=1; prev=""; while IFS= read -r -d $'\r' line; do [[ "$prev" == *"100%"* && "$line" != *"100%"* ]] && ((counter++)); echo -e "${BoldIntenseGreen}$counter/$total${ResetColor}|$line" > "$current_progress"; prev="$line"; done) \
+			"$(dirname "${i}")/Stems" "$i" >/dev/null  2> >(tee "$demucs_saida" | (counter=1; prev=""; while IFS= read -r -d $'\r' line; do [[ "$prev" == *"100%"* && "$line" != *"100%"* ]] && ((counter++)); echo -e "${BoldIntenseGreen}$counter/$total${ResetColor}|$line" > "$current_progress"; prev="$line"; done)) \
 			&& [ -s "$stems_dir/vocals.wav" ]; then
 				echo -e "${BoldIntenseGreen}[SUCESSO] $i processado com sucesso.${ResetColor}"
 				# Resultado OK > Entrada com Status OK no log.
 				log_ok "$i" "$stems_dir" "demucs_split.log"
 
 			else
-				echo -e "${BoldIntenseRed}[ERRO] $i falhou, realocado para o diretório $(dirname "${i}")/Falhas_Demucs${ResetColor}"
+				codigo=$? #Código de saída do Demucs: 137 = morto pelo sistema (falta de memória), 139 = segfault, 1 = erro do Python ou vocals.wav não gerado.
+				sleep 1 #Dá tempo do tee terminar de gravar a saída do Demucs.
+				# Antes o erro do Demucs não ficava salvo em lugar nenhum. Agora as últimas linhas vão para logs/demucs_erros.log.
+				echo "$(date) Código $codigo - $i" >> "$LOG_DIR/demucs_erros.log"
+				tail -c 6000 "$demucs_saida" | tr "\r" "\n" | tail -40 >> "$LOG_DIR/demucs_erros.log"
+				echo >> "$LOG_DIR/demucs_erros.log"
+
+				echo -e "${BoldIntenseRed}[ERRO] $i falhou (código $codigo, detalhes em logs/demucs_erros.log), realocado para o diretório $(dirname "${i}")/Falhas_Demucs${ResetColor}"
 				# Resultado ERRO > Entrada com Status ERRO no log.
 				log_erro "$i" "$(dirname "${i}")/Falhas_Demucs/$(basename "${i}")" "demucs_split.log"
 
